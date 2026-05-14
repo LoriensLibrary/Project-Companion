@@ -55,7 +55,7 @@ This is not a startup idea. It is the applied deployment of a published safety a
 | [CAMA Core Series](https://doi.org/10.5281/zenodo.19051834) (Papers 1–5) | Three-layer memory architecture, provenance-aware write discipline, blended retrieval, counterweight safety |
 | [Applied Series](https://doi.org/10.5281/zenodo.19257809) (Papers 6–9) | Domain extensions to spaceflight, habitation, healthcare, emotional companionship |
 | [Identity-Aware Harm Detection](https://doi.org/10.5281/zenodo.19425218) | Three-layer Librarian System for detecting individual-specific relational harm |
-| [Platform Regression Study](https://zenodo.org/records/) (Paper 11) | Empirical evidence that relational continuity is a measurable, neglected evaluation dimension |
+| [Platform Regression Study](https://doi.org/10.5281/zenodo.19582820) (Paper 11) | Empirical evidence that relational continuity is a measurable, neglected evaluation dimension |
 
 The safety mechanisms are not afterthoughts. They are the foundation:
 
