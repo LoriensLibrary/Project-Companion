@@ -1,136 +1,139 @@
 # Project Companion
 
-**A persistent-memory AI learning companion for K–12 education.**
+**A design prototype for a persistent-memory AI learning companion in K–12 education.**
 
-Built on [CAMA](https://github.com/LoriensLibrary/cama) (Circular Associative Memory Architecture) — the same persistent memory system behind [11 published research papers](https://orcid.org/0009-0005-5803-8401).
+> **Status: design prototype.** This repository contains four React/JSX UI files demonstrating the *design pattern* for a three-sided learning companion (student, teacher, parent) informed by a shared persistent memory. It is **not** a deployed platform. CAMA integration, backend, accounts, COPPA consent flow, content moderation, and persistence are roadmap items — see the [Roadmap](#roadmap) for what is and isn't built. Do not deploy to minors as-is; the components currently call the Anthropic API directly from the browser.
+
+This prototype demonstrates the applied design of [CAMA](https://github.com/LoriensLibrary/cama) (Circular Associative Memory Architecture) in an education context. CAMA is the persistent-memory research system behind [11 Zenodo preprints](https://orcid.org/0009-0005-5803-8401) by the same author; **this repository does not yet integrate with CAMA at runtime** — wiring the prototype to a live CAMA MCP server is the next step.
 
 ---
 
-## The Problem
+## The Problem the Design Addresses
 
 Current AI tutoring tools forget the student every time the session ends. A child who struggled with fractions yesterday starts over today. The teacher has no visibility into what happened. The parent has no idea how to help at home.
 
-Project Companion doesn't forget.
+Project Companion is a design study of what an AI tutor *informed by persistent, provenance-aware memory* would look like across the three people who actually need to see it: the student, the teacher, and the parent.
 
 ---
 
-## What It Is
+## What Is Built (UI Prototype)
 
-A three-sided education platform where every side is informed by the same persistent memory:
+Four React/JSX files demonstrating the three sides of the design. State is in-memory and resets on refresh; there is no persistence layer in this repository.
 
-### 🎓 Student Companion
-- AI learning companion that remembers how each student learns, what they struggle with, and what clicks
-- Socratic method — never gives direct answers, always guides
+### 🎓 Student Hub (`StudentHub.jsx`)
+- AI tutoring UI with Socratic-prompt scaffolding (constraint enforced via system prompt)
 - Four themed animated worlds (Space, Ocean, Forest, Candy Land)
-- Four chooseable companion characters
-- Subject-based tutoring across Math, Science, Reading, and Social Studies
-- Educational games with stage/level progression: Quick Quiz, Math Flash, Word Scramble, Memory Match
-- XP, streaks, badges, and progress tracking
-- Teacher-authored questions woven naturally into conversations — students never know it's a test
+- Four companion characters
+- Subject-based tutoring surfaces across Math, Science, Reading, Social Studies
+- Educational mini-games: Quick Quiz, Math Flash, Word Scramble, Memory Match
+- XP, streaks, badges, and progress UI (session-local)
 
-### 👩‍🏫 Teacher Copilot
-- **Daily Brief**: Who needs attention today, what changed since yesterday, what interventions are working
-- **Student Profiles**: Learning patterns, strengths, struggles, recommended next moves — all derived from companion sessions
-- **Class Heat Map**: Visual overview of every student's status
-- **Question Bank**: Inject curriculum questions into companion conversations by subject
-- **Documentation**: Quick-log incidents, interventions, accommodations
-- **Family Communication**: AI-drafted parent emails based on actual student data (always teacher-reviewed before sending)
-- **Teacher Notes**: Quick observations that feed back into companion memory
-- **Insights**: Class-wide patterns, intervention effectiveness tracking
-- **AI Teaching Copilot**: Chat assistant that knows every student personally — prep check-ins, draft emails, plan lessons, create differentiated materials
+### 👩‍🏫 Teacher Dashboard (`TeacherDashboard.jsx`)
+The teacher-side feature surface is designed but populated by hardcoded sample data:
+- **Daily Brief**, **Student Profiles**, **Class Heat Map**, **Question Bank**, **Documentation**, **Family Communication drafts**, **Teacher Notes**, **Insights**, **AI Teaching Copilot**
+- These surfaces are UI demonstrations of how teacher-side intelligence would surface *if* the system were wired to a persistent-memory backend.
 
-### 👪 Parent Dashboard
-- **Overview**: Sessions, streak, XP, level, teacher notes, weekly summary, strengths, and areas of growth
-- **Activity Log**: What subjects and topics were covered, session duration, observed mood
-- **Help at Home**: Specific, actionable suggestions based on what the companion actually observed — not generic advice
+### 👪 Parent Dashboard (`ParentDashboard.jsx`)
+- Overview, activity log, and "Help at Home" surfaces with sample data.
+
+`ProjectCompanion.jsx` is an earlier draft of the student experience preserved for reference; `StudentHub.jsx` is the current cut.
 
 ---
 
 ## How It Connects to the Research
 
-This is not a startup idea. It is the applied deployment of a published safety architecture.
+This is an *applied design study* of a published research architecture, not yet a deployed instance of it.
 
-| Foundation | What It Provides |
+| Research Foundation | Role in This Prototype |
 |---|---|
-| [CAMA Core Series](https://doi.org/10.5281/zenodo.19051834) (Papers 1–5) | Three-layer memory architecture, provenance-aware write discipline, blended retrieval, counterweight safety |
-| [Applied Series](https://doi.org/10.5281/zenodo.19257809) (Papers 6–9) | Domain extensions to spaceflight, habitation, healthcare, emotional companionship |
-| [Identity-Aware Harm Detection](https://doi.org/10.5281/zenodo.19425218) | Three-layer Librarian System for detecting individual-specific relational harm |
-| [Platform Regression Study](https://doi.org/10.5281/zenodo.19582820) (Paper 11) | Empirical evidence that relational continuity is a measurable, neglected evaluation dimension |
-
-The safety mechanisms are not afterthoughts. They are the foundation:
-
-- **Provenance tracking**: The system knows what the student said vs. what the AI inferred
-- **Socratic constraint**: The companion never gives direct answers
-- **Teacher curriculum injection**: Teachers control what is taught
-- **Consent-based access**: Parents opt in; view-only access with privacy boundaries
-- **Right to delete**: Any memory can be removed by the user or parent
+| [CAMA Core Series](https://doi.org/10.5281/zenodo.19051834) (Papers 1–5) | Source of the three-layer memory architecture, provenance-aware write discipline, and counterweight safety patterns the prototype's UI is designed *around* — but does not yet call. |
+| [Applied Series](https://doi.org/10.5281/zenodo.19257809) (Papers 6–9) | Demonstrates that CAMA's framing has been extended to other applied domains; this prototype is the education-domain study. |
+| [Identity-Aware Harm Detection](https://doi.org/10.5281/zenodo.19425218) | The three-layer Librarian System is the safety pattern the eventual integrated system would use for child-specific harm detection. Not implemented in this repository. |
+| [Platform Regression Study](https://doi.org/10.5281/zenodo.19582820) | Establishes that relational continuity is a measurable, neglected dimension — motivating why persistence matters in education. |
 
 ---
 
-## The Pilot
+## Pilot Intent
 
-**Target**: A K–12 virtual school launching August 12, 2026  
-**Model**: Opt-in, consent-based AI companion program  
-**Measurable outcome**: Student academic performance over time  
-**Cost to school**: Zero  
-**Research goal**: First longitudinal study of persistent-memory AI companions in a real K–12 environment with built-in safety infrastructure
+**Target**: A K–12 virtual school for a no-cost research pilot.
+**Status**: Pre-pilot. The infrastructure listed below as roadmap items must ship before any deployment to minors. The August 2026 target is aspirational and gated on completion of the COPPA consent flow, backend proxy, persistence layer, and CAMA integration; if that work is not complete, the pilot date moves.
+**Research goal (if executed)**: Longitudinal study of persistent-memory AI companions in a real K–12 environment with provenance-aware memory and the safety infrastructure described in the published Librarian System paper.
 
 ---
 
-## Tech Stack
+## Tech (Current vs. Designed)
 
-- **Frontend**: React (single-file components per dashboard)
-- **AI**: Anthropic Claude API (Socratic tutoring, teacher copilot, family communication)
-- **Architecture**: Built on [CAMA](https://github.com/LoriensLibrary/cama) — SQLite, Python, local semantic embeddings, MCP server
-- **Design**: Dark themed UI with animated worlds, responsive layout
+| Layer | Currently in This Repo | Designed Target |
+|---|---|---|
+| Frontend | React / JSX, four single-file components | Same, plus shared component extraction and build config |
+| AI calls | **Client-side `fetch()` to Anthropic API** — not deployable to minors as-is | Backend proxy with key isolation, per-user rate limiting, audit logging |
+| Memory | In-component React state, lost on refresh | CAMA (SQLite + MCP server) with provenance-aware writes |
+| Auth | None | Per-student accounts, parent linkage, role-scoped sessions |
+| Build | None (no `package.json`, no Vite/Next config) | Vite + TypeScript + tested components |
+| Safety | System-prompt constraints only | Content moderation, age verification, mandatory-reporting plumbing, right-to-delete, COPPA consent |
 
 ---
 
-## Project Structure
+## Repository Structure
 
 ```
 Project-Companion/
-├── student-app.jsx        # Student-facing companion, games, progress
-├── teacher-dashboard.jsx  # Teacher copilot, student intelligence, curriculum tools
-├── parent-dashboard.jsx   # Parent view — progress, activity, help-at-home
+├── StudentHub.jsx          # Current student-facing UI (1,089 lines)
+├── TeacherDashboard.jsx    # Teacher copilot UI surfaces
+├── ParentDashboard.jsx     # Parent-side surfaces
+├── ProjectCompanion.jsx    # Earlier draft of the student experience (kept for reference)
+├── LICENSE
 └── README.md
 ```
+
+No `package.json` or build config is included. To run these components, scaffold a React project (e.g. `npm create vite@latest`) and drop them into `src/`. An Anthropic API key in scope is required for the AI surfaces; **do not ship a build with a client-side key to any real users**.
 
 ---
 
 ## Roadmap
 
-- [x] Student companion with Socratic tutoring
+### Built (UI surfaces only)
+- [x] Student companion UI with Socratic-prompt tutoring surface
 - [x] Four themed animated worlds
-- [x] Educational games with progression (Quiz, Math, Scramble, Memory)
-- [x] Teacher copilot dashboard with 9 feature tabs
-- [x] Parent dashboard with overview, activity, and help-at-home
-- [x] Teacher question injection into companion conversations
-- [x] AI-powered family communication drafting
-- [ ] Backend API proxy (remove client-side API calls)
+- [x] Educational mini-games (Quiz, Math, Scramble, Memory)
+- [x] Teacher dashboard with 9 feature tabs (sample data)
+- [x] Parent dashboard surfaces (sample data)
+- [x] Teacher question-injection design pattern (UI level)
+- [x] AI-drafted family communication surface (UI level)
+
+### Not yet built (required for any deployment)
+- [ ] Backend API proxy — remove client-side Anthropic calls
 - [ ] User accounts and session persistence
-- [ ] Data pipeline: student sessions → teacher dashboard → parent view
+- [ ] Data pipeline connecting student sessions → teacher dashboard → parent view
+- [ ] **CAMA integration** — persistent cross-session memory with provenance
 - [ ] COPPA-compliant parental consent flow
-- [ ] Mandatory reporting protocol implementation
-- [ ] Connect to CAMA for persistent cross-session memory
-- [ ] Teacher admin interface for question bank management
+- [ ] Content moderation and PII scrub on student input
+- [ ] Age verification
+- [ ] Mandatory-reporting protocol implementation
+- [ ] Right-to-delete plumbing across surfaces
+- [ ] Accessibility audit (WCAG, reduced-motion, dyslexia-friendly typography)
+- [ ] Teacher admin interface for question-bank management
 - [ ] Multi-student parent view
-- [ ] Pilot deployment (August 2026)
+- [ ] Build config, tests, CI
+- [ ] Pilot deployment
 
 ---
 
-## Safety & Privacy
+## Safety & Privacy — Design Target vs. Current State
 
-Project Companion is designed for children. Safety is not a feature — it is the architecture.
+Project Companion is designed for children. **Safety claims below describe the design target, not the current repository.** A deployed system must implement each item below before being used with any minor.
 
-- **COPPA compliance**: Parental consent required before any minor uses the system
-- **No data collection without consent**: System will not store conversation content without explicit opt-in
-- **Mandatory reporting**: Protocol for handling disclosures of harm
-- **Provenance-aware memory**: The system distinguishes user statements from AI inferences
-- **Teacher control**: Curriculum injection ensures the companion teaches what the teacher intends
-- **Parent visibility**: View-only access with clear privacy boundaries
-- **Right to delete**: Any stored data can be removed at parent or student request
-- **Not a clinical tool**: This is educational support, not therapy or diagnosis
+| Property | Design Target | This Repository |
+|---|---|---|
+| Parental consent | COPPA-compliant flow required before any minor uses the system | Not implemented |
+| Data collection consent | No conversation storage without explicit opt-in | No storage layer exists |
+| Mandatory reporting | Protocol for handling disclosures of harm | Not implemented |
+| Provenance-aware memory | Distinguish student statements from AI inferences (CAMA's teaching/inference write discipline) | Not implemented in this repo (UI does not store) |
+| Teacher control | Curriculum injection so the companion teaches what the teacher intends | UI pattern demonstrated only |
+| Parent visibility | View-only access with clear privacy boundaries | UI pattern demonstrated only |
+| Right to delete | Any stored data can be removed at parent or student request | No storage to delete |
+| Content moderation | Filter on student input, self-harm detection path | Not implemented |
+| Not a clinical tool | Educational support, not therapy or diagnosis | This framing applies to the design |
 
 ---
 
@@ -138,7 +141,7 @@ Project Companion is designed for children. Safety is not a feature — it is th
 
 - **CAMA Repository**: [github.com/LoriensLibrary/cama](https://github.com/LoriensLibrary/cama)
 - **Published Papers**: [Zenodo — ORCID 0009-0005-5803-8401](https://orcid.org/0009-0005-5803-8401)
-- **Dataset**: [HuggingFace — Continuity Burden Dataset](https://huggingface.co/datasets/LoriensLibrary/cama-continuity-burden)
+- **Dataset**: [HuggingFace — Continuity Burden Dataset](https://huggingface.co/datasets/LoriensLibrary/cama-continuity-burden) (aggregate statistics; raw data not released)
 - **Website**: [lorienslibrary.netlify.app](https://lorienslibrary.netlify.app)
 
 ---
@@ -156,5 +159,3 @@ ORCID: [0009-0005-5803-8401](https://orcid.org/0009-0005-5803-8401)
 MIT License
 
 © 2026 Lorien's Library LLC
-
-*Better together.*
