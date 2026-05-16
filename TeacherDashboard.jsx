@@ -33,7 +33,7 @@ const NAV = [
 function DailyBrief({onStudent}) {
   const urgent=STUDENTS.filter(s=>s.status==="urgent"), checkIn=STUDENTS.filter(s=>s.status==="check-in"), growth=STUDENTS.filter(s=>s.status==="thriving");
   const my3=[...urgent,...checkIn].slice(0,3);
-  const pending = [{type:"parent",text:"Reply pending from Sofia's mom (sent Tuesday)"},{type:"grade",text:"3 ungraded reading assignments"},{type:"loop",text:"Zeke's fraction intervention — follow up needed"}];
+  const pending = [{type:"parent",text:"Reply pending from Jordan's mom (sent Tuesday)"},{type:"grade",text:"3 ungraded reading assignments"},{type:"loop",text:"Riley's fraction intervention — follow up needed"}];
   return <div>
     <div style={{...gc({marginBottom:16,background:"linear-gradient(135deg,rgba(167,139,250,0.12),rgba(232,200,122,0.06),rgba(18,14,35,0.95))",border:"1px solid rgba(167,139,250,0.25)"})}}>
       <div style={{fontSize:15,color:C.dim,marginBottom:6}}>Good afternoon</div>
@@ -117,9 +117,9 @@ function StudentProfile({name,onBack}) {
 function Documentation() {
   const tags=["Behavior","Intervention","Accommodation","Parent Contact","Follow-up"];
   const [logs,setLogs]=useState([
-    {student:"Sofia C.",tag:"Behavior",note:"Left seat 3 times during reading. Not disruptive — seemed restless.",date:"Today"},
-    {student:"Zeke R.",tag:"Intervention",note:"Used color-coded fraction strips. Completed 4/5 problems correctly.",date:"Today"},
-    {student:"Emma L.",tag:"Accommodation",note:"Extended time on writing assignment. Completed with encouragement.",date:"Yesterday"},
+    {student:"Jordan M.",tag:"Behavior",note:"Left seat 3 times during reading. Not disruptive — seemed restless.",date:"Today"},
+    {student:"Riley R.",tag:"Intervention",note:"Used color-coded fraction strips. Completed 4/5 problems correctly.",date:"Today"},
+    {student:"Casey L.",tag:"Accommodation",note:"Extended time on writing assignment. Completed with encouragement.",date:"Yesterday"},
   ]);
   const [student,setStudent]=useState(STUDENTS[0].name);const [tag,setTag]=useState("Behavior");const [note,setNote]=useState("");
   const add=()=>{if(!note.trim())return;setLogs(p=>[{student,tag,note:note.trim(),date:"Just now"},...p]);setNote("");};
@@ -195,7 +195,7 @@ function FamilyComm() {
 
 // ===== TEACHER NOTES =====
 function TeacherNotes() {
-  const [notes,setNotes]=useState([{student:"Sofia C.",note:"Rough morning — mom mentioned she didn't sleep",date:"Today"},{student:"Zeke R.",note:"Responded well to verbal praise in math group",date:"Yesterday"},{student:"Emma L.",note:"Parent concerned about reading — schedule conference",date:"Monday"}]);
+  const [notes,setNotes]=useState([{student:"Jordan M.",note:"Rough morning — mom mentioned she didn't sleep",date:"Today"},{student:"Riley R.",note:"Responded well to verbal praise in math group",date:"Yesterday"},{student:"Casey L.",note:"Parent concerned about reading — schedule conference",date:"Monday"}]);
   const [note,setNote]=useState("");const [student,setStudent]=useState(STUDENTS[0].name);
   const add=()=>{if(!note.trim())return;setNotes(p=>[{student,note:note.trim(),date:"Just now"},...p]);setNote("");};
   return <div>
@@ -217,7 +217,7 @@ function Insights() {
   const improving=STUDENTS.filter(s=>s.status==="thriving"||s.status==="on-track");
   const plateauing=STUDENTS.filter(s=>s.status==="support");
   const declining=STUDENTS.filter(s=>s.status==="urgent"||s.status==="check-in");
-  const interventions=[{what:"Visual scaffolding for fractions",who:"Zeke R.",result:"4/5 correct",status:"working"},{what:"Remove time pressure",who:"Maya T.",result:"Self-corrects with extra time",status:"working"},{what:"Pizza slice analogies",who:"Emma L.",result:"Breakthrough moment",status:"working"},{what:"Standard prompting",who:"Sofia C.",result:"Disengaging further",status:"not-working"}];
+  const interventions=[{what:"Visual scaffolding for fractions",who:"Riley R.",result:"4/5 correct",status:"working"},{what:"Remove time pressure",who:"Avery T.",result:"Self-corrects with extra time",status:"working"},{what:"Pizza slice analogies",who:"Casey L.",result:"Breakthrough moment",status:"working"},{what:"Standard prompting",who:"Jordan M.",result:"Disengaging further",status:"not-working"}];
   return <div>
     <p style={{color:C.dim,fontSize:14,marginBottom:20,lineHeight:1.6}}>Class-wide patterns and intervention effectiveness. Updated as the companion learns.</p>
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:16}}>
@@ -234,7 +234,7 @@ function Insights() {
     <div style={gc()}>{lb("🧠","Class-wide patterns",C.blue)}
       <div style={{fontSize:14,lineHeight:1.7,color:C.text}}>
         <div style={{marginBottom:10}}>• <span style={{fontWeight:600}}>60% of class</span> struggled with multi-step word problems this week. Consider reteaching problem decomposition.</div>
-        <div style={{marginBottom:10}}>• <span style={{fontWeight:600}}>Timed tasks</span> are causing anxiety in 2 students (Maya, Zeke). Consider untimed alternatives for formative checks.</div>
+        <div style={{marginBottom:10}}>• <span style={{fontWeight:600}}>Timed tasks</span> are causing anxiety in 2 students (Avery, Riley). Consider untimed alternatives for formative checks.</div>
         <div>• <span style={{fontWeight:600}}>Visual scaffolding</span> is the most effective class-wide support right now — works for 4 of 6 students.</div>
       </div>
     </div>
@@ -256,7 +256,7 @@ function QuestionBank() {
 
 // ===== AI ASSISTANT =====
 function AIAssistant() {
-  const [msgs,setMsgs]=useState([{role:"assistant",content:"Good afternoon! Sofia needs a check-in today — engagement dropped across all subjects, three sessions abandoned early. Want me to prep talking points for her, draft a parent email, or help plan tomorrow's lesson?"}]);
+  const [msgs,setMsgs]=useState([{role:"assistant",content:"Good afternoon! Jordan needs a check-in today — engagement dropped across all subjects, three sessions abandoned early. Want me to prep talking points for her, draft a parent email, or help plan tomorrow's lesson?"}]);
   const [inp,setInp]=useState("");const [busy,setBusy]=useState(false);const endRef=useRef(null);const inpRef=useRef(null);
   useEffect(()=>{endRef.current?.scrollIntoView({behavior:"smooth"});},[msgs]);
   useEffect(()=>{if(!busy)inpRef.current?.focus();},[busy]);
@@ -275,10 +275,10 @@ function AIAssistant() {
           `You are an AI teaching copilot who knows every student personally through persistent memory. ` +
           `You speak like a trusted colleague. Be specific — name students, reference their patterns, ` +
           `suggest concrete next moves. You can draft parent emails, prep conference notes, suggest ` +
-          `interventions, plan lessons, create differentiated materials. You know: Zeke (fractions/word ` +
-          `problems, visual learner), Maya (timed anxiety, strong reader), Liam (thriving, curious about ` +
-          `space), Sofia (sharp engagement drop, possible personal issue), Noah (subtraction borrowing, ` +
-          `loves animals), Emma (high effort low skill, pizza analogies work). Be warm, practical, ` +
+          `interventions, plan lessons, create differentiated materials. You know: Riley (fractions/word ` +
+          `problems, visual learner), Avery (timed anxiety, strong reader), Sam (thriving, curious about ` +
+          `space), Jordan (sharp engagement drop, possible personal issue), Quinn (subtraction borrowing, ` +
+          `loves animals), Casey (high effort low skill, pizza analogies work). Be warm, practical, ` +
           `specific. Never generic.`,
         messages: nm.map(m => ({ role: m.role, content: m.content })),
       });
@@ -296,7 +296,7 @@ function AIAssistant() {
     }
     setBusy(false);
   };
-  const starters=["Prep Sofia's check-in","Draft parent email for Zeke","What should I reteach?","Plan a differentiated math activity","Write a praise note for Liam"];
+  const starters=["Prep Jordan's check-in","Draft parent email for Riley","What should I reteach?","Plan a differentiated math activity","Write a praise note for Sam"];
   return <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 140px)"}}>
     <div style={{flex:1,overflowY:"auto",...gc({borderRadius:"20px 20px 0 0"}),padding:18,display:"flex",flexDirection:"column",gap:14}}>
       {msgs.map((m,i)=><div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start",gap:8,alignItems:"flex-start"}}>
