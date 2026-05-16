@@ -36,7 +36,7 @@ The teacher-side feature surface is designed but populated by hardcoded sample d
 ### 👪 Parent Dashboard (`ParentDashboard.jsx`)
 - Overview, activity log, and "Help at Home" surfaces with sample data.
 
-`ProjectCompanion.jsx` is an earlier draft of the student experience preserved for reference; `StudentHub.jsx` is the current cut.
+`archive/ProjectCompanion.jsx` is an earlier draft of the student experience preserved for reference; `StudentHub.jsx` is the current cut.
 
 ---
 
@@ -81,7 +81,8 @@ Project-Companion/
 ├── StudentHub.jsx          # Current student-facing UI (1,089 lines)
 ├── TeacherDashboard.jsx    # Teacher copilot UI surfaces
 ├── ParentDashboard.jsx     # Parent-side surfaces
-├── ProjectCompanion.jsx    # Earlier draft of the student experience (kept for reference)
+├── archive/
+│   └── ProjectCompanion.jsx  # Earlier draft of the student experience (kept for reference)
 ├── LICENSE
 └── README.md
 ```
