@@ -1,0 +1,20 @@
+{
+  "name": "project-companion",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Design prototype (UI only) for a CAMA-informed K-12 learning companion. Not a deployable platform — see README.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.0"
+  }
+}
