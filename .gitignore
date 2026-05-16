@@ -3,3 +3,9 @@ dist
 .env
 .env.local
 .vite
+
+# Local Claude Code dev-server config (port choice etc. - per-machine)
+.claude/
+
+# One-shot helper scripts
+_*.py

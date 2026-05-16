@@ -26,6 +26,9 @@ Project Companion is a design study of what an AI tutor *informed by persistent,
 Four React/JSX files demonstrating the three sides of the design. State is in-memory and resets on refresh; there is no persistence layer in this repository.
 
 ### 🎓 Student Hub (`StudentHub.jsx`)
+
+![Student Hub — themed learning home with companion, teacher notes, and feature tiles](docs/screenshots/student-hub.png)
+
 - AI tutoring UI with Socratic-prompt scaffolding (constraint enforced via system prompt)
 - Four themed animated worlds (Space, Ocean, Forest, Candy Land)
 - Four companion characters
@@ -34,11 +37,17 @@ Four React/JSX files demonstrating the three sides of the design. State is in-me
 - XP, streaks, badges, and progress UI (session-local)
 
 ### 👩‍🏫 Teacher Dashboard (`TeacherDashboard.jsx`)
+
+![Teacher Dashboard — daily brief showing pending tasks and student intervention notes](docs/screenshots/teacher-dashboard.png)
+
 The teacher-side feature surface is designed but populated by hardcoded sample data:
 - **Daily Brief**, **Student Profiles**, **Class Heat Map**, **Question Bank**, **Documentation**, **Family Communication drafts**, **Teacher Notes**, **Insights**, **AI Teaching Copilot**
 - These surfaces are UI demonstrations of how teacher-side intelligence would surface *if* the system were wired to a persistent-memory backend.
 
 ### 👪 Parent Dashboard (`ParentDashboard.jsx`)
+
+![Parent Dashboard — child profile with teacher notes, weekly summary, and home-support tips](docs/screenshots/parent-dashboard.png)
+
 - Overview, activity log, and "Help at Home" surfaces with sample data.
 
 `archive/ProjectCompanion.jsx` is an earlier draft of the student experience preserved for reference; `StudentHub.jsx` is the current cut.
