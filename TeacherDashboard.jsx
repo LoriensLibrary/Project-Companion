@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import { callClaude } from "./lib/callClaude.js";
+import { STUDENTS } from "./data/sample.js";
 
 const TEACHER_THEMES = {
   amethyst: { name:"Amethyst", accent:"#a78bfa", bg:"#0b0a14", card:"rgba(26,20,50,0.9)", card2:"rgba(18,14,35,0.95)", border:"rgba(167,139,250,0.15)", bHover:"rgba(167,139,250,0.4)", glow1:"rgba(167,139,250,0.08)", glow2:"rgba(232,200,122,0.05)", dot:"#a78bfa" },
@@ -18,14 +20,7 @@ const lb = (icon, text, color=C.accent) => <div style={{fontSize:10,color,fontWe
 const ibtn = (on) => ({ padding:"10px 24px", borderRadius:12, border:"none", background:on?"linear-gradient(135deg,#a78bfa,#8b6fd4)":"rgba(167,139,250,0.1)", color:on?"#fff":C.dim, fontSize:14, fontWeight:700, cursor:on?"pointer":"default", boxShadow:on?"0 4px 20px rgba(167,139,250,0.25)":"none" });
 const ipt = { width:"100%", padding:"12px 16px", borderRadius:12, border:"1px solid rgba(167,139,250,0.15)", background:"rgba(11,10,20,0.8)", color:C.text, fontSize:14, outline:"none", marginBottom:10 };
 
-const STUDENTS = [
-  { name:"Zeke R.", sessions:12, streak:5, xp:340, status:"check-in", struggles:["Fractions → stalls converting visuals to equations","Word problems → loses multi-step sequences"], strengths:["Strong spatial reasoning","Drawing-based explanations work"], pattern:"Engagement drops after timed tasks. Re-engages with visual scaffolding.", intervention:"Try grid-based fraction exercises with color-coded parts. Companion saw success when he draws before writing.", changed:"Stopped asking for hints this week.", mood:"frustrated" },
-  { name:"Maya T.", sessions:8, streak:3, xp:220, status:"support", struggles:["Multiplication → freezes on timed recall"], strengths:["Excellent reading comprehension","Above-grade vocabulary"], pattern:"Performs well untimed. Anxiety in timed tasks.", intervention:"Remove time pressure for math. She self-corrects with 10 extra seconds.", changed:"Reading confidence up. Math confidence declining.", mood:"anxious" },
-  { name:"Liam J.", sessions:15, streak:7, xp:480, status:"thriving", struggles:[], strengths:["Strong across all subjects","Asks thoughtful follow-ups","Helps peers"], pattern:"High engagement, steady growth. Self-motivated.", intervention:"No intervention needed. Consider enrichment challenges.", changed:"Asking questions about space — curious beyond curriculum.", mood:"engaged" },
-  { name:"Sofia C.", sessions:6, streak:2, xp:150, status:"urgent", struggles:["Reading → can't infer character motivation","Science → memorizes but can't explain why"], strengths:["Good verbal one-on-one","Understands community concepts"], pattern:"Engagement dropped sharply. Full sentences → one-word answers.", intervention:"Check in personally today. Something may have changed outside school. Withdrawal is across ALL subjects.", changed:"Three sessions abandoned early this week. New behavior.", mood:"withdrawn" },
-  { name:"Noah W.", sessions:10, streak:4, xp:290, status:"on-track", struggles:["Subtraction → loses place value when borrowing"], strengths:["Loves science and animals","Strong visual memory"], pattern:"Steady improvement. Subtraction is isolated.", intervention:"Vertical format with place-value columns. Confirmed in 3 sessions.", changed:"No significant changes.", mood:"calm" },
-  { name:"Emma L.", sessions:4, streak:1, xp:90, status:"check-in", struggles:["Sounding out words → skips middle syllables","Fractions → no foundation yet"], strengths:["High effort even when struggling","Responds well to encouragement"], pattern:"Low skill, high effort. Needs scaffolding not challenge.", intervention:"Start with manipulatives before abstract notation. Pizza slice analogies worked.", changed:"Streak broke yesterday. Check motivation.", mood:"trying" },
-];
+// STUDENTS is fictional sample data — see data/sample.js
 const SM = { urgent:{color:"#f87171",bg:"rgba(248,113,113,0.1)",label:"Needs attention",icon:"🔴"}, "check-in":{color:"#f0c674",bg:"rgba(240,198,116,0.1)",label:"Check in",icon:"🟡"}, support:{color:"#7cb3f0",bg:"rgba(124,179,240,0.1)",label:"Needs support",icon:"🔵"}, "on-track":{color:"#6ee7a0",bg:"rgba(110,231,160,0.1)",label:"On track",icon:"🟢"}, thriving:{color:"#a78bfa",bg:"rgba(167,139,250,0.1)",label:"Thriving",icon:"✨"} };
 const SUBJECTS = ["Math","Science","Reading","Social Studies"];
 const NAV = [
@@ -150,10 +145,37 @@ function Documentation() {
 function FamilyComm() {
   const [student,setStudent]=useState(STUDENTS[0].name);const [tone,setTone]=useState("warm");const [draft,setDraft]=useState("");const [busy,setBusy]=useState(false);
   const tones=["warm","formal","concise"];
-  const generate=async()=>{setBusy(true);const s=STUDENTS.find(st=>st.name===student);
-    try{const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,system:`Write a parent email for a teacher about their student. Tone: ${tone}. Include what the student worked on, where they improved, what needs support, and how parents can help at home. Be specific using this data. Never generic.`,messages:[{role:"user",content:`Student: ${s.name}. Strengths: ${s.strengths.join(", ")}. Struggles: ${s.struggles.join(", ")}. Pattern: ${s.pattern}. Recent change: ${s.changed}. Intervention: ${s.intervention}`}]})});
-    const d=await r.json();setDraft(d.content?.filter(x=>x.type==="text").map(x=>x.text).join("\n")||"Could not generate.");
-    }catch{setDraft("Connection error. Try again.");}setBusy(false);};
+  const generate = async () => {
+    setBusy(true);
+    const s = STUDENTS.find(st => st.name === student);
+    try {
+      // NOTE: client-side API call is for prototype only. Production must use a backend proxy.
+      const d = await callClaude({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 800,
+        system:
+          `Write a parent email for a teacher about their student. Tone: ${tone}. ` +
+          `Include what the student worked on, where they improved, what needs support, ` +
+          `and how parents can help at home. Be specific using this data. Never generic.`,
+        messages: [
+          {
+            role: "user",
+            content:
+              `Student: ${s.name}. Strengths: ${s.strengths.join(", ")}. ` +
+              `Struggles: ${s.struggles.join(", ")}. Pattern: ${s.pattern}. ` +
+              `Recent change: ${s.changed}. Intervention: ${s.intervention}`,
+          },
+        ],
+      });
+      setDraft(
+        d.content?.filter(x => x.type === "text").map(x => x.text).join("\n") ||
+          "Could not generate."
+      );
+    } catch {
+      setDraft("Connection error. Try again.");
+    }
+    setBusy(false);
+  };
   return <div>
     <p style={{color:C.dim,fontSize:14,marginBottom:16,lineHeight:1.6}}>Generate parent emails, conference prep, praise notes. Always review and edit before sending.</p>
     <div style={{...gc({marginBottom:16})}}>
@@ -238,10 +260,42 @@ function AIAssistant() {
   const [inp,setInp]=useState("");const [busy,setBusy]=useState(false);const endRef=useRef(null);const inpRef=useRef(null);
   useEffect(()=>{endRef.current?.scrollIntoView({behavior:"smooth"});},[msgs]);
   useEffect(()=>{if(!busy)inpRef.current?.focus();},[busy]);
-  const send=async()=>{if(!inp.trim()||busy)return;const nm=[...msgs,{role:"user",content:inp.trim()}];setMsgs(nm);setInp("");setBusy(true);
-    try{const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1500,system:`You are an AI teaching copilot who knows every student personally through persistent memory. You speak like a trusted colleague. Be specific — name students, reference their patterns, suggest concrete next moves. You can draft parent emails, prep conference notes, suggest interventions, plan lessons, create differentiated materials. You know: Zeke (fractions/word problems, visual learner), Maya (timed anxiety, strong reader), Liam (thriving, curious about space), Sofia (sharp engagement drop, possible personal issue), Noah (subtraction borrowing, loves animals), Emma (high effort low skill, pizza analogies work). Be warm, practical, specific. Never generic.`,messages:nm.map(m=>({role:m.role,content:m.content}))})});
-    const d=await r.json();setMsgs(p=>[...p,{role:"assistant",content:d.content?.filter(x=>x.type==="text").map(x=>x.text).join("\n")||"Let me try again."}]);
-    }catch{setMsgs(p=>[...p,{role:"assistant",content:"Connection issue — try again?"}]);}setBusy(false);};
+  const send = async () => {
+    if (!inp.trim() || busy) return;
+    const nm = [...msgs, { role: "user", content: inp.trim() }];
+    setMsgs(nm);
+    setInp("");
+    setBusy(true);
+    try {
+      // NOTE: client-side API call is for prototype only. Production must use a backend proxy.
+      const d = await callClaude({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1500,
+        system:
+          `You are an AI teaching copilot who knows every student personally through persistent memory. ` +
+          `You speak like a trusted colleague. Be specific — name students, reference their patterns, ` +
+          `suggest concrete next moves. You can draft parent emails, prep conference notes, suggest ` +
+          `interventions, plan lessons, create differentiated materials. You know: Zeke (fractions/word ` +
+          `problems, visual learner), Maya (timed anxiety, strong reader), Liam (thriving, curious about ` +
+          `space), Sofia (sharp engagement drop, possible personal issue), Noah (subtraction borrowing, ` +
+          `loves animals), Emma (high effort low skill, pizza analogies work). Be warm, practical, ` +
+          `specific. Never generic.`,
+        messages: nm.map(m => ({ role: m.role, content: m.content })),
+      });
+      setMsgs(p => [
+        ...p,
+        {
+          role: "assistant",
+          content:
+            d.content?.filter(x => x.type === "text").map(x => x.text).join("\n") ||
+            "Let me try again.",
+        },
+      ]);
+    } catch {
+      setMsgs(p => [...p, { role: "assistant", content: "Connection issue — try again?" }]);
+    }
+    setBusy(false);
+  };
   const starters=["Prep Sofia's check-in","Draft parent email for Zeke","What should I reteach?","Plan a differentiated math activity","Write a praise note for Liam"];
   return <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 140px)"}}>
     <div style={{flex:1,overflowY:"auto",...gc({borderRadius:"20px 20px 0 0"}),padding:18,display:"flex",flexDirection:"column",gap:14}}>
