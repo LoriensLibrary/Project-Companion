@@ -6,6 +6,11 @@
 
 This prototype demonstrates the applied design of [CAMA](https://github.com/LoriensLibrary/cama) (Circular Associative Memory Architecture) in an education context. CAMA is the persistent-memory research system behind [11 Zenodo preprints](https://orcid.org/0009-0005-5803-8401) by the same author; **this repository does not yet integrate with CAMA at runtime** — wiring the prototype to a live CAMA MCP server is the next step.
 
+> **Reviewing the engineering ecosystem?**
+> For the mature implementation pattern (typed full-stack, tests, CI, live demo), see [Telos_kalos](https://github.com/LoriensLibrary/Telos_kalos).
+> For the shared memory architecture and research, see [CAMA](https://github.com/LoriensLibrary/cama).
+> This repository is intentionally the design-prototype stage of the family.
+
 ---
 
 ## The Problem the Design Addresses
