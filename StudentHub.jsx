@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { callClaude } from "./lib/callClaude.js";
 
 const AVATARS = {
   luna: { name: "Luna", emoji: "🐱", color: "#9b7fd4", desc: "A curious kitten who loves to learn" },
@@ -118,15 +119,82 @@ function WorldBg({theme}) {
 const BG = (t) => `linear-gradient(135deg,${t.bg},${t.card},${t.bg})`;
 
 // ===== CHAT =====
-function Chat({avatar,name,subject,subjectKey,starter,t,themeKey,onBack}) {
-  const [msgs,setMsgs]=useState([]);const [inp,setInp]=useState("");const [busy,setBusy]=useState(true);const [turn,setTurn]=useState(0);
-  const endRef=useRef(null);const inpRef=useRef(null);
-  const tq=()=>{const qs=teacherQBank[subjectKey]||[];if(!qs.length)return"";const q=qs[turn%qs.length];return`\nTEACHER INJECTION: Weave naturally. Question: "${q.question}" ${q.answer?`Answer: "${q.answer}"`:""}`;};
-  const sysp=`You are ${avatar.name}, a learning companion for ${name} (ages 5-12). Subject: ${subject.name}. Started with: "${starter}". RULES: NEVER give direct answers. Socratic method. Warm, patient. 2-3 sentences max.${tq()}`;
-  useEffect(()=>{(async()=>{try{const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,system:sysp,messages:[{role:"user",content:starter}]})});const d=await r.json();const txt=d.content?.filter(x=>x.type==="text").map(x=>x.text).join("\n")||`Hey ${name}! ${avatar.emoji}`;setMsgs([{role:"user",content:starter,hide:true},{role:"assistant",content:txt}]);}catch{setMsgs([{role:"assistant",content:`Hey ${name}! Ready for ${subject.name}! ${avatar.emoji}`}]);}setBusy(false);})();},[]);
+function Chat({ avatar, name, subject, subjectKey, starter, t, themeKey, onBack }) {
+  const [msgs, setMsgs] = useState([]);
+  const [inp, setInp] = useState("");
+  const [busy, setBusy] = useState(true);
+  const [turn, setTurn] = useState(0);
+  const endRef = useRef(null);
+  const inpRef = useRef(null);
+  const tq = () => {
+    const qs = teacherQBank[subjectKey] || [];
+    if (!qs.length) return "";
+    const q = qs[turn % qs.length];
+    return `\nTEACHER INJECTION: Weave naturally. Question: "${q.question}" ${q.answer ? `Answer: "${q.answer}"` : ""}`;
+  };
+  const sysp =
+    `You are ${avatar.name}, a learning companion for ${name} (ages 5-12). ` +
+    `Subject: ${subject.name}. Started with: "${starter}". ` +
+    `RULES: NEVER give direct answers. Socratic method. Warm, patient. ` +
+    `2-3 sentences max.${tq()}`;
+  useEffect(() => {
+    (async () => {
+      try {
+        // NOTE: client-side API call is for prototype only. Production must use a backend proxy.
+        const d = await callClaude({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 300,
+          system: sysp,
+          messages: [{ role: "user", content: starter }],
+        });
+        const txt =
+          d.content?.filter(x => x.type === "text").map(x => x.text).join("\n") ||
+          `Hey ${name}! ${avatar.emoji}`;
+        setMsgs([
+          { role: "user", content: starter, hide: true },
+          { role: "assistant", content: txt },
+        ]);
+      } catch {
+        setMsgs([{ role: "assistant", content: `Hey ${name}! Ready for ${subject.name}! ${avatar.emoji}` }]);
+      }
+      setBusy(false);
+    })();
+  }, []);
   useEffect(()=>{endRef.current?.scrollIntoView({behavior:"smooth"});},[msgs]);
   useEffect(()=>{if(!busy)inpRef.current?.focus();},[busy]);
-  const send=async()=>{if(!inp.trim()||busy)return;const um={role:"user",content:inp.trim()};const nm=[...msgs,um];setMsgs(nm);setInp("");setBusy(true);setTurn(n=>n+1);try{const h=nm.filter(m=>!m.hide||m.role==="user").map(m=>({role:m.role,content:m.content}));const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:sysp,messages:h})});const d=await r.json();setMsgs(p=>[...p,{role:"assistant",content:d.content?.filter(x=>x.type==="text").map(x=>x.text).join("\n")||"Try again?"}]);}catch{setMsgs(p=>[...p,{role:"assistant",content:`Oops! ${avatar.emoji}`}]);}setBusy(false);};
+  const send = async () => {
+    if (!inp.trim() || busy) return;
+    const um = { role: "user", content: inp.trim() };
+    const nm = [...msgs, um];
+    setMsgs(nm);
+    setInp("");
+    setBusy(true);
+    setTurn(n => n + 1);
+    try {
+      const h = nm
+        .filter(m => !m.hide || m.role === "user")
+        .map(m => ({ role: m.role, content: m.content }));
+      // NOTE: client-side API call is for prototype only. Production must use a backend proxy.
+      const d = await callClaude({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: sysp,
+        messages: h,
+      });
+      setMsgs(p => [
+        ...p,
+        {
+          role: "assistant",
+          content:
+            d.content?.filter(x => x.type === "text").map(x => x.text).join("\n") ||
+            "Try again?",
+        },
+      ]);
+    } catch {
+      setMsgs(p => [...p, { role: "assistant", content: `Oops! ${avatar.emoji}` }]);
+    }
+    setBusy(false);
+  };
   const vis=msgs.filter(m=>!m.hide);
   return(
     <div style={{display:"flex",flexDirection:"column",height:"100vh",background:BG(t),fontFamily:"'Source Sans 3',sans-serif",color:"#e8e6e1",position:"relative"}}>
