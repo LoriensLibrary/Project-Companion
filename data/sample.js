@@ -3,7 +3,7 @@
 // surfaces refer to the same imagined classroom.
 
 export const STUDENTS = [
-  { name:"Riley R.", sessions:12, streak:5, xp:340, status:"check-in", struggles:["Fractions → stalls converting visuals to equations","Word problems → loses multi-step sequences"], strengths:["Strong spatial reasoning","Drawing-based explanations work"], pattern:"Engagement drops after timed tasks. Re-engages with visual scaffolding.", intervention:"Try grid-based fraction exercises with color-coded parts. Companion saw success when he draws before writing.", changed:"Stopped asking for hints this week.", mood:"frustrated" },
+  { name:"Riley R.", sessions:12, streak:5, xp:340, status:"check-in", struggles:["Fractions → stalls converting visuals to equations","Word problems → loses multi-step sequences"], strengths:["Strong spatial reasoning","Drawing-based explanations work"], pattern:"Engagement drops after timed tasks. Re-engages with visual scaffolding.", intervention:"Try grid-based fraction exercises with color-coded parts. Companion saw success when they draw before writing.", changed:"Stopped asking for hints this week.", mood:"frustrated" },
   { name:"Avery T.", sessions:8, streak:3, xp:220, status:"support", struggles:["Multiplication → freezes on timed recall"], strengths:["Excellent reading comprehension","Above-grade vocabulary"], pattern:"Performs well untimed. Anxiety in timed tasks.", intervention:"Remove time pressure for math. She self-corrects with 10 extra seconds.", changed:"Reading confidence up. Math confidence declining.", mood:"anxious" },
   { name:"Sam J.", sessions:15, streak:7, xp:480, status:"thriving", struggles:[], strengths:["Strong across all subjects","Asks thoughtful follow-ups","Helps peers"], pattern:"High engagement, steady growth. Self-motivated.", intervention:"No intervention needed. Consider enrichment challenges.", changed:"Asking questions about space — curious beyond curriculum.", mood:"engaged" },
   { name:"Jordan M.", sessions:6, streak:2, xp:150, status:"urgent", struggles:["Reading → can't infer character motivation","Science → memorizes but can't explain why"], strengths:["Good verbal one-on-one","Understands community concepts"], pattern:"Engagement dropped sharply. Full sentences → one-word answers.", intervention:"Check in personally today. Something may have changed outside school. Withdrawal is across ALL subjects.", changed:"Three sessions abandoned early this week. New behavior.", mood:"withdrawn" },
@@ -19,13 +19,13 @@ export const CHILD = {
   struggles: ["Fractions — stalls when converting visuals to written equations", "Word problems — loses track of multi-step sequences"],
   recentTopics: ["Multiplication practice", "Shape identification", "Fraction basics", "Addition review"],
   pattern: "Engagement drops after timed math tasks. Re-engages with visual scaffolding. Stopped asking for hints this week — may be avoiding perceived failure.",
-  weekSummary: "Riley had 4 sessions this week. He showed strong improvement in shape recognition and basic addition. Fractions remain challenging — he understands the visual concept but struggles to write the equations. His companion noticed he works best when he can draw before writing. He seemed more hesitant to ask for help this week compared to last week.",
+  weekSummary: "Riley had 4 sessions this week. Strong improvement in shape recognition and basic addition. Fractions remain challenging — the visual concept is clear, but writing the equations is the gap. Their companion noticed Riley works best when they can draw before writing. Riley seemed more hesitant to ask for help this week compared to last week.",
   howToHelp: [
-    "Practice fractions at home using pizza slices, pie pieces, or drawing — visual/hands-on approaches work best for him",
-    "Let him explain math problems to you out loud — he processes better verbally",
-    "Avoid timed drills for now — they increase his anxiety. Untimed practice builds confidence",
-    "Celebrate effort, not just correct answers — he responds strongly to encouragement",
-    "Ask him to teach you what he learned today — teaching reinforces understanding",
+    "Practice fractions at home using pizza slices, pie pieces, or drawing — visual/hands-on approaches work best",
+    "Let Riley explain math problems to you out loud — they process better verbally",
+    "Avoid timed drills for now — they increase anxiety. Untimed practice builds confidence",
+    "Celebrate effort, not just correct answers — Riley responds strongly to encouragement",
+    "Ask Riley to teach you what they learned today — teaching reinforces understanding",
   ],
-  teacherNote: "Riley is making good progress! He's especially strong with visual and spatial tasks. We're working on building his confidence with written math — he knows more than he thinks he does. Keep encouraging him at home!",
+  teacherNote: "Riley is making good progress! Especially strong with visual and spatial tasks. We're working on building confidence with written math — Riley knows more than they think. Keep encouraging at home!",
 };

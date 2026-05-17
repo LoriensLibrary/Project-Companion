@@ -70,7 +70,7 @@ This is an *applied design study* of a published research architecture, not yet 
 ## Pilot Intent
 
 **Target**: A K–12 virtual school for a no-cost research pilot.
-**Status**: Pre-pilot. The infrastructure listed below as roadmap items must ship before any deployment to minors. The August 2026 target is aspirational and gated on completion of the COPPA consent flow, backend proxy, persistence layer, and CAMA integration; if that work is not complete, the pilot date moves.
+**Status**: Pre-pilot. The infrastructure listed below as roadmap items must ship before any deployment to minors. The pilot date is intentionally undated — it moves when the COPPA consent flow, backend proxy, persistence layer, and CAMA integration are complete, not before.
 **Research goal (if executed)**: Longitudinal study of persistent-memory AI companions in a real K–12 environment with provenance-aware memory and the safety infrastructure described in the published Librarian System paper.
 
 ---
@@ -79,11 +79,11 @@ This is an *applied design study* of a published research architecture, not yet 
 
 | Layer | Currently in This Repo | Designed Target |
 |---|---|---|
-| Frontend | React / JSX, four single-file components | Same, plus shared component extraction and build config |
-| AI calls | **Client-side `fetch()` to Anthropic API** — not deployable to minors as-is | Backend proxy with key isolation, per-user rate limiting, audit logging |
+| Frontend | React + JSX, three dashboard components + a chooser landing | Same, plus shared-component extraction and TypeScript |
+| Build | Vite scaffold (`package.json`, `vite.config.js`, `src/main.jsx`, `index.html`) — `npm install && npm run dev` works | Same, with TypeScript and a test suite |
+| AI calls | Routed through `lib/callClaude.js` with proper Anthropic auth headers — **still client-side, not deployable to minors** | Backend proxy with key isolation, per-user rate limiting, audit logging |
 | Memory | In-component React state, lost on refresh | CAMA (SQLite + MCP server) with provenance-aware writes |
 | Auth | None | Per-student accounts, parent linkage, role-scoped sessions |
-| Build | None (no `package.json`, no Vite/Next config) | Vite + TypeScript + tested components |
 | Safety | System-prompt constraints only | Content moderation, age verification, mandatory-reporting plumbing, right-to-delete, COPPA consent |
 
 ---
@@ -92,16 +92,29 @@ This is an *applied design study* of a published research architecture, not yet 
 
 ```
 Project-Companion/
-├── StudentHub.jsx          # Current student-facing UI (1,089 lines)
-├── TeacherDashboard.jsx    # Teacher copilot UI surfaces
-├── ParentDashboard.jsx     # Parent-side surfaces
+├── StudentHub.jsx           # Student-facing UI
+├── TeacherDashboard.jsx     # Teacher copilot UI surfaces
+├── ParentDashboard.jsx      # Parent-side surfaces
+├── lib/
+│   └── callClaude.js        # Anthropic API wrapper with auth headers
+├── data/
+│   └── sample.js            # Fictional sample students (clearly labelled)
+├── src/
+│   ├── main.jsx             # Vite entry
+│   └── App.jsx              # Landing-page chooser between the three dashboards
+├── docs/
+│   └── screenshots/         # Hero images shown above
 ├── archive/
-│   └── ProjectCompanion.jsx  # Earlier draft of the student experience (kept for reference)
+│   └── ProjectCompanion.jsx # Earlier draft of the student experience (kept for reference)
+├── package.json             # React 18 + Vite 5
+├── vite.config.js
+├── index.html               # Mounts src/main.jsx
+├── .env.example             # VITE_ANTHROPIC_API_KEY placeholder
 ├── LICENSE
 └── README.md
 ```
 
-No `package.json` or build config is included. To run these components, scaffold a React project (e.g. `npm create vite@latest`) and drop them into `src/`. An Anthropic API key in scope is required for the AI surfaces; **do not ship a build with a client-side key to any real users**.
+**Run locally:** `npm install && npm run dev`. The chooser at `/` lets you flip between the Student, Teacher, and Parent dashboards. An Anthropic API key (`VITE_ANTHROPIC_API_KEY`) is required for the AI surfaces — see `.env.example`. **Do not ship a build with a client-side key to any real users**; the production path requires a backend proxy (see Roadmap).
 
 ---
 

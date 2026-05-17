@@ -195,7 +195,7 @@ function FamilyComm() {
 
 // ===== TEACHER NOTES =====
 function TeacherNotes() {
-  const [notes,setNotes]=useState([{student:"Jordan M.",note:"Rough morning — mom mentioned she didn't sleep",date:"Today"},{student:"Riley R.",note:"Responded well to verbal praise in math group",date:"Yesterday"},{student:"Casey L.",note:"Parent concerned about reading — schedule conference",date:"Monday"}]);
+  const [notes,setNotes]=useState([{student:"Jordan M.",note:"Rough morning — parent mentioned a tough night at home",date:"Today"},{student:"Riley R.",note:"Responded well to verbal praise in math group",date:"Yesterday"},{student:"Casey L.",note:"Parent concerned about reading — schedule conference",date:"Monday"}]);
   const [note,setNote]=useState("");const [student,setStudent]=useState(STUDENTS[0].name);
   const add=()=>{if(!note.trim())return;setNotes(p=>[{student,note:note.trim(),date:"Just now"},...p]);setNote("");};
   return <div>
@@ -256,7 +256,7 @@ function QuestionBank() {
 
 // ===== AI ASSISTANT =====
 function AIAssistant() {
-  const [msgs,setMsgs]=useState([{role:"assistant",content:"Good afternoon! Jordan needs a check-in today — engagement dropped across all subjects, three sessions abandoned early. Want me to prep talking points for her, draft a parent email, or help plan tomorrow's lesson?"}]);
+  const [msgs,setMsgs]=useState([{role:"assistant",content:"Good afternoon! Jordan needs a check-in today — engagement dropped across all subjects, three sessions abandoned early. Want me to prep talking points, draft a parent email, or help plan tomorrow's lesson?"}]);
   const [inp,setInp]=useState("");const [busy,setBusy]=useState(false);const endRef=useRef(null);const inpRef=useRef(null);
   useEffect(()=>{endRef.current?.scrollIntoView({behavior:"smooth"});},[msgs]);
   useEffect(()=>{if(!busy)inpRef.current?.focus();},[busy]);

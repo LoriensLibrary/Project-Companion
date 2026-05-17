@@ -73,7 +73,7 @@ export default function ParentDashboard() {
           {/* Child card */}
           <div style={{ ...gc({ marginBottom: 16, background: "linear-gradient(135deg, rgba(167,139,250,0.1), rgba(232,200,122,0.05), rgba(18,14,35,0.95))", border: "1px solid rgba(167,139,250,0.25)" }) }}>
             <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
-              <div style={{ width: 52, height: 52, borderRadius: "50%", background: `${accent}22`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>👦</div>
+              <div style={{ width: 52, height: 52, borderRadius: "50%", background: `${accent}22`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>🧒</div>
               <div>
                 <div style={{ fontFamily: "Georgia,serif", fontSize: 22, fontWeight: 700 }}>{c.name}</div>
                 <div style={{ fontSize: 13, color: "#8b83a8" }}>{c.grade} • Companion: {c.companion} • Theme: {c.theme}</div>
