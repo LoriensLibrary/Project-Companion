@@ -35,6 +35,7 @@ Four React/JSX files demonstrating the three sides of the design. State is in-me
 - Subject-based tutoring surfaces across Math, Science, Reading, Social Studies
 - Educational mini-games: Quick Quiz, Math Flash, Word Scramble, Memory Match
 - XP, streaks, badges, and progress UI (session-local)
+- **First live CAMA integration:** the Recent Activity panel on the Progress view reads from a local CAMA backend via the `useCamaMemory` hook (`lib/useCamaMemory.js`). Falls back to fictional sample data when CAMA isn't reachable. See [Running with a live CAMA backend](#running-with-a-live-cama-backend) below.
 
 ### 👩‍🏫 Teacher Dashboard (`TeacherDashboard.jsx`)
 
@@ -82,7 +83,8 @@ This is an *applied design study* of a published research architecture, not yet 
 | Frontend | React + JSX, three dashboard components + a chooser landing | Same, plus shared-component extraction and TypeScript |
 | Build | Vite scaffold (`package.json`, `vite.config.js`, `src/main.jsx`, `index.html`) — `npm install && npm run dev` works | Same, with TypeScript and a test suite |
 | AI calls | Routed through `lib/callClaude.js` with proper Anthropic auth headers — **still client-side, not deployable to minors** | Backend proxy with key isolation, per-user rate limiting, audit logging |
-| Memory | In-component React state, lost on refresh | CAMA (SQLite + MCP server) with provenance-aware writes |
+| Memory (read) | `lib/useCamaMemory.js` reads from a local CAMA dashboard HTTP endpoint (MVP) with sample-data fallback when CAMA isn't running | MCP-over-HTTP `cama_query_memories` call against a per-tenant CAMA backend |
+| Memory (write) | None — no student-session memories are persisted yet | `cama_store_exchange`/`cama_store_teaching` against the same per-tenant backend, with provenance tagging |
 | Auth | None | Per-student accounts, parent linkage, role-scoped sessions |
 | Safety | System-prompt constraints only | Content moderation, age verification, mandatory-reporting plumbing, right-to-delete, COPPA consent |
 
@@ -96,7 +98,9 @@ Project-Companion/
 ├── TeacherDashboard.jsx     # Teacher copilot UI surfaces
 ├── ParentDashboard.jsx      # Parent-side surfaces
 ├── lib/
-│   └── callClaude.js        # Anthropic API wrapper with auth headers
+│   ├── callClaude.js        # Anthropic API wrapper with auth headers
+│   ├── callCama.js          # Configurable HTTP wrapper for the CAMA backend
+│   └── useCamaMemory.js     # React hook that reads recent topics from CAMA with sample-data fallback
 ├── data/
 │   └── sample.js            # Fictional sample students (clearly labelled)
 ├── src/
@@ -116,11 +120,31 @@ Project-Companion/
 
 **Run locally:** `npm install && npm run dev`. The chooser at `/` lets you flip between the Student, Teacher, and Parent dashboards. An Anthropic API key (`VITE_ANTHROPIC_API_KEY`) is required for the AI surfaces — see `.env.example`. **Do not ship a build with a client-side key to any real users**; the production path requires a backend proxy (see Roadmap).
 
+### Running with a live CAMA backend
+
+The Student Hub's **Recent Activity** panel is the first surface in this repo wired to a real CAMA call. It reads from the CAMA dashboard HTTP API and falls back to fictional sample data when no backend is reachable, so `npm run dev` alone is still a complete demo.
+
+To see the live integration with real data:
+
+1. In a separate terminal, start CAMA (uses the synthetic seeded demo DB — your personal corpus is not touched):
+   ```bash
+   git clone https://github.com/LoriensLibrary/cama.git
+   cd cama
+   docker compose up
+   ```
+   Verify `http://localhost:5555/api/data` returns JSON.
+2. Back in this repo, run `npm run dev`. Vite proxies `/api/cama/*` → `http://localhost:5555/api/*` (configurable via `CAMA_PROXY_TARGET`).
+3. Open the Student Hub → Progress view. The Recent Activity tile should show the **CAMA · LIVE** badge in green and render memory entries from the seeded demo corpus instead of the hardcoded sample list.
+
+**What this integration is and is not.** This is a read-only call against CAMA's dashboard HTTP endpoint (`/api/data`), which serves the same SQLite memory corpus that the MCP tool `cama_query_memories` reads from. It is **not** yet a real MCP-over-HTTP client — the JSON-RPC wire protocol for streamable_http MCP from a browser is still roadmap. Both the dashboard read path and the future MCP read path return the same underlying data; the dashboard endpoint is just the one CAMA already ships and documents publicly. The write path (storing new memories from student sessions back into CAMA) is also roadmap, gated on the backend proxy and per-tenant CAMA routing listed below.
+
+The hook signature `useCamaMemory(studentId, { fallbackTopics })` accepts a `studentId` so the component contract is stable when multi-student routing lands in CAMA; today the argument is used only as a cache key. The single-participant demo corpus serves the same data regardless of `studentId`.
+
 ---
 
 ## Roadmap
 
-### Built (UI surfaces only)
+### Built (UI surfaces + first live integration)
 - [x] Student companion UI with Socratic-prompt tutoring surface
 - [x] Four themed animated worlds
 - [x] Educational mini-games (Quiz, Math, Scramble, Memory)
@@ -128,12 +152,14 @@ Project-Companion/
 - [x] Parent dashboard surfaces (sample data)
 - [x] Teacher question-injection design pattern (UI level)
 - [x] AI-drafted family communication surface (UI level)
+- [x] **CAMA read integration (MVP)** — Student Hub's Recent Activity tile reads from a live CAMA backend via `useCamaMemory`; falls back to sample data when CAMA isn't running
 
 ### Not yet built (required for any deployment)
 - [ ] Backend API proxy — remove client-side Anthropic calls
 - [ ] User accounts and session persistence
 - [ ] Data pipeline connecting student sessions → teacher dashboard → parent view
-- [ ] **CAMA integration** — persistent cross-session memory with provenance
+- [ ] **CAMA write integration** — store new student-session memories back into CAMA with provenance (gated on backend proxy + per-tenant CAMA routing)
+- [ ] **CAMA-over-MCP transport** — migrate the read path from CAMA's dashboard HTTP endpoint to the streamable_http MCP wire protocol
 - [ ] COPPA-compliant parental consent flow
 - [ ] Content moderation and PII scrub on student input
 - [ ] Age verification

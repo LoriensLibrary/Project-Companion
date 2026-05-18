@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { callClaude } from "./lib/callClaude.js";
+import { useCamaMemory } from "./lib/useCamaMemory.js";
 
 const AVATARS = {
   luna: { name: "Luna", emoji: "🐱", color: "#9b7fd4", desc: "A curious kitten who loves to learn" },
@@ -401,12 +402,18 @@ function Progress({avatar,name,t,themeKey,onBack}) {
     { emoji: "🏆", label: "All Subjects", earned: false },
     { emoji: "🚀", label: "25 Sessions", earned: false },
   ];
-  const recentActivity = [
+  // Recent Activity is the first surface in this prototype wired to a real
+  // CAMA call. The hook reads from a local CAMA dashboard via /api/cama/data
+  // (proxied in vite.config.js) and falls back to the fictional list below
+  // when CAMA isn't reachable, so the demo still runs without a backend.
+  const fallbackRecentActivity = [
     { subject: "Math", topic: "Multiplication", time: "Today", icon: "🔢" },
     { subject: "Science", topic: "Water Cycle", time: "Yesterday", icon: "🔬" },
     { subject: "Math", topic: "Shapes", time: "2 days ago", icon: "🔢" },
     { subject: "Reading", topic: "Vocabulary", time: "3 days ago", icon: "📚" },
   ];
+  const { topics: recentActivity, source: recentActivitySource } =
+    useCamaMemory(name, { fallbackTopics: fallbackRecentActivity });
 
   return (
     <div style={{minHeight:"100vh",background:BG(t),fontFamily:"'Source Sans 3',sans-serif",color:"#e8e6e1",position:"relative"}}>
@@ -483,7 +490,12 @@ function Progress({avatar,name,t,themeKey,onBack}) {
 
           {/* Recent Activity */}
           <div style={{background:`${t.card}dd`,border:`1px solid ${t.border}`,borderRadius:14,padding:"16px 18px",marginBottom:16,backdropFilter:"blur(8px)"}}>
-            <div style={{fontSize:11,color:"#66bb6a",fontWeight:700,marginBottom:14,textTransform:"uppercase",letterSpacing:1}}>🕐 Recent Activity</div>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+              <div style={{fontSize:11,color:"#66bb6a",fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>🕐 Recent Activity</div>
+              <div title={recentActivitySource === "cama" ? "Live data from your local CAMA backend" : "Sample data — start CAMA locally to see real memory"} style={{fontSize:10,fontWeight:700,letterSpacing:0.5,padding:"3px 8px",borderRadius:10,background: recentActivitySource === "cama" ? "#66bb6a22" : `${t.dim}22`,color: recentActivitySource === "cama" ? "#66bb6a" : t.dim,border:`1px solid ${recentActivitySource === "cama" ? "#66bb6a55" : t.border}`}}>
+                {recentActivitySource === "cama" ? "CAMA · LIVE" : "SAMPLE"}
+              </div>
+            </div>
             {recentActivity.map((a,i)=>(
               <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 0",borderTop:i>0?`1px solid ${t.border}`:"none"}}>
                 <span style={{fontSize:20}}>{a.icon}</span>
