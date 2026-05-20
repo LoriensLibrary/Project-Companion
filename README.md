@@ -2,7 +2,9 @@
 
 **A design prototype for a persistent-memory AI learning companion in K–12 education.**
 
-> **Status: design prototype.** This repository contains four React/JSX UI files demonstrating the *design pattern* for a three-sided learning companion (student, teacher, parent) informed by a shared persistent memory. It is **not** a deployed platform. CAMA *read* integration is MVP (Recent Activity tile reads from a local CAMA dashboard endpoint with sample-data fallback); CAMA *write* integration, backend proxy, accounts, COPPA consent flow, content moderation, and persistence are roadmap items — see the [Roadmap](#roadmap) for what is and isn't built. Do not deploy to minors as-is; the components currently call the Anthropic API directly from the browser.
+> **Status: design prototype.** This repository contains four React/JSX UI files demonstrating the *design pattern* for a three-sided learning companion (student, teacher, parent) informed by a shared persistent memory. It is **not** a deployed platform. CAMA *read* integration is MVP (Recent Activity tile reads from a local CAMA dashboard endpoint with sample-data fallback); CAMA *write* integration, backend proxy, accounts, COPPA consent flow, content moderation, and persistence are roadmap items — see the [Roadmap](#roadmap) for what is and isn't built.
+>
+> **Defaults to MOCK TUTOR MODE.** Live Anthropic API calls are DISABLED unless a developer explicitly opts in via `VITE_TUTOR_ALLOW_LIVE_CLAUDE=true`. In mock mode the UI renders deterministic stub responses with a `[MOCK TUTOR MODE]` prefix so demos work without any API key and without any risk of a client-bundled key being shipped to minors. Live mode exists for developer testing of the Anthropic integration only; do not deploy a build with live mode enabled. See [`lib/callClaude.js`](./lib/callClaude.js) and [`.env.example`](./.env.example).
 
 This prototype demonstrates the applied design of [CAMA](https://github.com/LoriensLibrary/cama) (Circular Associative Memory Architecture) in an education context. CAMA is the persistent-memory research system behind [11 Zenodo preprints](https://orcid.org/0009-0005-5803-8401) by the same author; **this repository has one MVP CAMA read integration today** (Recent Activity tile via the dashboard HTTP endpoint, sample-data fallback when no backend is reachable) — wiring the full MCP-over-HTTP read/write path with per-tenant routing is the next step.
 
@@ -82,7 +84,7 @@ This is an *applied design study* of a published research architecture, not yet 
 |---|---|---|
 | Frontend | React + JSX, three dashboard components + a chooser landing | Same, plus shared-component extraction and TypeScript |
 | Build | Vite scaffold (`package.json`, `vite.config.js`, `src/main.jsx`, `index.html`) — `npm install && npm run dev` works | Same, with TypeScript and a test suite |
-| AI calls | Routed through `lib/callClaude.js` with proper Anthropic auth headers — **still client-side, not deployable to minors** | Backend proxy with key isolation, per-user rate limiting, audit logging |
+| AI calls | Default MOCK TUTOR MODE in `lib/callClaude.js` — no network, no key needed, deterministic `[MOCK TUTOR MODE]`-prefixed stubs. Live Anthropic calls only when `VITE_TUTOR_ALLOW_LIVE_CLAUDE=true` is set for developer testing. **Live builds still not deployable to minors** because the key would be in the client bundle. | Backend proxy with key isolation, per-user rate limiting, audit logging |
 | Memory (read) | `lib/useCamaMemory.js` reads from a local CAMA dashboard HTTP endpoint (MVP) with sample-data fallback when CAMA isn't running | MCP-over-HTTP `cama_query_memories` call against a per-tenant CAMA backend |
 | Memory (write) | None — no student-session memories are persisted yet | `cama_store_exchange`/`cama_store_teaching` against the same per-tenant backend, with provenance tagging |
 | Auth | None | Per-student accounts, parent linkage, role-scoped sessions |
@@ -113,12 +115,12 @@ Project-Companion/
 ├── package.json             # React 18 + Vite 5
 ├── vite.config.js
 ├── index.html               # Mounts src/main.jsx
-├── .env.example             # VITE_ANTHROPIC_API_KEY placeholder
+├── .env.example             # MOCK MODE defaults + LIVE MODE opt-in instructions
 ├── LICENSE
 └── README.md
 ```
 
-**Run locally:** `npm install && npm run dev`. The chooser at `/` lets you flip between the Student, Teacher, and Parent dashboards. An Anthropic API key (`VITE_ANTHROPIC_API_KEY`) is required for the AI surfaces — see `.env.example`. **Do not ship a build with a client-side key to any real users**; the production path requires a backend proxy (see Roadmap).
+**Run locally:** `npm install && npm run dev`. The chooser at `/` lets you flip between the Student, Teacher, and Parent dashboards. The AI surfaces work out of the box in MOCK TUTOR MODE — no API key needed; you'll see `[MOCK TUTOR MODE]`-prefixed stub responses. To test the live Anthropic integration as a developer, set BOTH `VITE_TUTOR_ALLOW_LIVE_CLAUDE=true` AND `VITE_ANTHROPIC_API_KEY=sk-ant-...` in `.env.local` — see `.env.example`. **Do not ship a build with live mode enabled to any real users**; the production path requires a backend proxy (see Roadmap).
 
 ### Running with a live CAMA backend
 
