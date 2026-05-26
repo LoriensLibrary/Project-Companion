@@ -2,11 +2,11 @@
 
 **A design prototype for a persistent-memory AI learning companion in K–12 education.**
 
-> **Status: design prototype.** This repository contains four React/JSX UI files demonstrating the *design pattern* for a three-sided learning companion (student, teacher, parent) informed by a shared persistent memory. It is **not** a deployed platform. CAMA *read* integration is MVP (Recent Activity tile reads from a local CAMA dashboard endpoint with sample-data fallback); CAMA *write* integration, backend proxy, accounts, COPPA consent flow, content moderation, and persistence are roadmap items — see the [Roadmap](#roadmap) for what is and isn't built.
+> **Status: design prototype.** This repository contains four React/JSX UI files demonstrating the *design pattern* for a three-sided learning companion (student, teacher, parent) informed by a shared persistent memory. It is **not** a deployed platform. CAMA *read* integration is MVP (Recent Activity tile reads from a local CAMA dashboard endpoint with sample-data fallback); CAMA *write* integration, backend proxy, accounts, COPPA consent flow, content moderation, and persistence are roadmap items. See the [Roadmap](#roadmap) for what is and isn't built.
 >
 > **Defaults to MOCK TUTOR MODE.** Live Anthropic API calls are DISABLED unless a developer explicitly opts in via `VITE_TUTOR_ALLOW_LIVE_CLAUDE=true`. In mock mode the UI renders deterministic stub responses with a `[MOCK TUTOR MODE]` prefix so demos work without any API key and without any risk of a client-bundled key being shipped to minors. Live mode exists for developer testing of the Anthropic integration only; do not deploy a build with live mode enabled. See [`lib/callClaude.js`](./lib/callClaude.js) and [`.env.example`](./.env.example).
 
-This prototype demonstrates the applied design of [CAMA](https://github.com/LoriensLibrary/cama) (Circular Associative Memory Architecture) in an education context. CAMA is the persistent-memory research system behind [11 Zenodo preprints](https://orcid.org/0009-0005-5803-8401) by the same author; **this repository has one MVP CAMA read integration today** (Recent Activity tile via the dashboard HTTP endpoint, sample-data fallback when no backend is reachable) — wiring the full MCP-over-HTTP read/write path with per-tenant routing is the next step.
+This prototype demonstrates the applied design of [CAMA](https://github.com/LoriensLibrary/cama) (Circular Associative Memory Architecture) in an education context. CAMA is the persistent-memory research system behind [11 Zenodo preprints](https://orcid.org/0009-0005-5803-8401) by the same author; **this repository has one MVP CAMA read integration today** (Recent Activity tile via the dashboard HTTP endpoint, sample-data fallback when no backend is reachable). Wiring the full MCP-over-HTTP read/write path with per-tenant routing is the next step.
 
 > **Reviewing the engineering ecosystem?**
 > For the mature implementation pattern (typed full-stack, tests, CI, live demo), see [Telos_kalos](https://github.com/LoriensLibrary/Telos_kalos).
@@ -29,7 +29,7 @@ Four React/JSX files demonstrating the three sides of the design. State is in-me
 
 ### 🎓 Student Hub (`StudentHub.jsx`)
 
-![Student Hub — themed learning home with companion, teacher notes, and feature tiles](docs/screenshots/student-hub.png)
+![Student Hub: themed learning home with companion, teacher notes, and feature tiles](docs/screenshots/student-hub.png)
 
 - AI tutoring UI with Socratic-prompt scaffolding (constraint enforced via system prompt)
 - Four themed animated worlds (Space, Ocean, Forest, Candy Land)
@@ -41,7 +41,7 @@ Four React/JSX files demonstrating the three sides of the design. State is in-me
 
 ### 👩‍🏫 Teacher Dashboard (`TeacherDashboard.jsx`)
 
-![Teacher Dashboard — daily brief showing pending tasks and student intervention notes](docs/screenshots/teacher-dashboard.png)
+![Teacher Dashboard: daily brief showing pending tasks and student intervention notes](docs/screenshots/teacher-dashboard.png)
 
 The teacher-side feature surface is designed but populated by hardcoded sample data:
 - **Daily Brief**, **Student Profiles**, **Class Heat Map**, **Question Bank**, **Documentation**, **Family Communication drafts**, **Teacher Notes**, **Insights**, **AI Teaching Copilot**
@@ -49,7 +49,7 @@ The teacher-side feature surface is designed but populated by hardcoded sample d
 
 ### 👪 Parent Dashboard (`ParentDashboard.jsx`)
 
-![Parent Dashboard — child profile with teacher notes, weekly summary, and home-support tips](docs/screenshots/parent-dashboard.png)
+![Parent Dashboard: child profile with teacher notes, weekly summary, and home-support tips](docs/screenshots/parent-dashboard.png)
 
 - Overview, activity log, and "Help at Home" surfaces with sample data.
 
@@ -63,17 +63,17 @@ This is an *applied design study* of a published research architecture, not yet 
 
 | Research Foundation | Role in This Prototype |
 |---|---|
-| [CAMA Core Series](https://doi.org/10.5281/zenodo.19051834) (Papers 1–5) | Source of the three-layer memory architecture, provenance-aware write discipline, and counterweight safety patterns the prototype's UI is designed *around* — but does not yet call. |
+| [CAMA Core Series](https://doi.org/10.5281/zenodo.19051834) (Papers 1–5) | Source of the three-layer memory architecture, provenance-aware write discipline, and counterweight safety patterns the prototype's UI is designed *around*, but does not yet call. |
 | [Applied Series](https://doi.org/10.5281/zenodo.19257809) (Papers 6–9) | Demonstrates that CAMA's framing has been extended to other applied domains; this prototype is the education-domain study. |
 | [Identity-Aware Harm Detection](https://doi.org/10.5281/zenodo.19425218) | The three-layer Librarian System is the safety pattern the eventual integrated system would use for child-specific harm detection. Not implemented in this repository. |
-| [Platform Regression Study](https://doi.org/10.5281/zenodo.19582820) | Establishes that relational continuity is a measurable, neglected dimension — motivating why persistence matters in education. |
+| [Platform Regression Study](https://doi.org/10.5281/zenodo.19582820) | Establishes that relational continuity is a measurable, neglected dimension, motivating why persistence matters in education. |
 
 ---
 
 ## Pilot Intent
 
 **Target**: A K–12 virtual school for a no-cost research pilot.
-**Status**: Pre-pilot. The infrastructure listed below as roadmap items must ship before any deployment to minors. The pilot date is intentionally undated — it moves when the COPPA consent flow, backend proxy, persistence layer, and CAMA integration are complete, not before.
+**Status**: Pre-pilot. The infrastructure listed below as roadmap items must ship before any deployment to minors. The pilot date is intentionally undated. It moves when the COPPA consent flow, backend proxy, persistence layer, and CAMA integration are complete, not before.
 **Research goal (if executed)**: Longitudinal study of persistent-memory AI companions in a real K–12 environment with provenance-aware memory and the safety infrastructure described in the published Librarian System paper.
 
 ---
@@ -83,10 +83,10 @@ This is an *applied design study* of a published research architecture, not yet 
 | Layer | Currently in This Repo | Designed Target |
 |---|---|---|
 | Frontend | React + JSX, three dashboard components + a chooser landing | Same, plus shared-component extraction and TypeScript |
-| Build | Vite scaffold (`package.json`, `vite.config.js`, `src/main.jsx`, `index.html`) — `npm install && npm run dev` works | Same, with TypeScript and a test suite |
-| AI calls | Default MOCK TUTOR MODE in `lib/callClaude.js` — no network, no key needed, deterministic `[MOCK TUTOR MODE]`-prefixed stubs. Live Anthropic calls only when `VITE_TUTOR_ALLOW_LIVE_CLAUDE=true` is set for developer testing. **Live builds still not deployable to minors** because the key would be in the client bundle. | Backend proxy with key isolation, per-user rate limiting, audit logging |
+| Build | Vite scaffold (`package.json`, `vite.config.js`, `src/main.jsx`, `index.html`). `npm install && npm run dev` works | Same, with TypeScript and a test suite |
+| AI calls | Default MOCK TUTOR MODE in `lib/callClaude.js`. No network, no key needed, deterministic `[MOCK TUTOR MODE]`-prefixed stubs. Live Anthropic calls only when `VITE_TUTOR_ALLOW_LIVE_CLAUDE=true` is set for developer testing. **Live builds still not deployable to minors** because the key would be in the client bundle. | Backend proxy with key isolation, per-user rate limiting, audit logging |
 | Memory (read) | `lib/useCamaMemory.js` reads from a local CAMA dashboard HTTP endpoint (MVP) with sample-data fallback when CAMA isn't running | MCP-over-HTTP `cama_query_memories` call against a per-tenant CAMA backend |
-| Memory (write) | None — no student-session memories are persisted yet | `cama_store_exchange`/`cama_store_teaching` against the same per-tenant backend, with provenance tagging |
+| Memory (write) | None. No student-session memories are persisted yet. | `cama_store_exchange`/`cama_store_teaching` against the same per-tenant backend, with provenance tagging |
 | Auth | None | Per-student accounts, parent linkage, role-scoped sessions |
 | Safety | System-prompt constraints only | Content moderation, age verification, mandatory-reporting plumbing, right-to-delete, COPPA consent |
 
@@ -120,7 +120,7 @@ Project-Companion/
 └── README.md
 ```
 
-**Run locally:** `npm install && npm run dev`. The chooser at `/` lets you flip between the Student, Teacher, and Parent dashboards. The AI surfaces work out of the box in MOCK TUTOR MODE — no API key needed; you'll see `[MOCK TUTOR MODE]`-prefixed stub responses. To test the live Anthropic integration as a developer, set BOTH `VITE_TUTOR_ALLOW_LIVE_CLAUDE=true` AND `VITE_ANTHROPIC_API_KEY=sk-ant-...` in `.env.local` — see `.env.example`. **Do not ship a build with live mode enabled to any real users**; the production path requires a backend proxy (see Roadmap).
+**Run locally:** `npm install && npm run dev`. The chooser at `/` lets you flip between the Student, Teacher, and Parent dashboards. The AI surfaces work out of the box in MOCK TUTOR MODE. No API key needed; you'll see `[MOCK TUTOR MODE]`-prefixed stub responses. To test the live Anthropic integration as a developer, set BOTH `VITE_TUTOR_ALLOW_LIVE_CLAUDE=true` AND `VITE_ANTHROPIC_API_KEY=sk-ant-...` in `.env.local`. See `.env.example`. **Do not ship a build with live mode enabled to any real users**; the production path requires a backend proxy (see Roadmap).
 
 ### Running with a live CAMA backend
 
@@ -128,7 +128,7 @@ The Student Hub's **Recent Activity** panel is the first surface in this repo wi
 
 To see the live integration with real data:
 
-1. In a separate terminal, start CAMA (uses the synthetic seeded demo DB — your personal corpus is not touched):
+1. In a separate terminal, start CAMA (uses the synthetic seeded demo DB; your personal corpus is not touched):
    ```bash
    git clone https://github.com/LoriensLibrary/cama.git
    cd cama
@@ -138,7 +138,7 @@ To see the live integration with real data:
 2. Back in this repo, run `npm run dev`. Vite proxies `/api/cama/*` → `http://localhost:5555/api/*` (configurable via `CAMA_PROXY_TARGET`).
 3. Open the Student Hub → Progress view. The Recent Activity tile should show the **CAMA · LIVE** badge in green and render memory entries from the seeded demo corpus instead of the hardcoded sample list.
 
-**What this integration is and is not.** This is a read-only call against CAMA's dashboard HTTP endpoint (`/api/data`), which serves the same SQLite memory corpus that the MCP tool `cama_query_memories` reads from. It is **not** yet a real MCP-over-HTTP client — the JSON-RPC wire protocol for streamable_http MCP from a browser is still roadmap. Both the dashboard read path and the future MCP read path return the same underlying data; the dashboard endpoint is just the one CAMA already ships and documents publicly. The write path (storing new memories from student sessions back into CAMA) is also roadmap, gated on the backend proxy and per-tenant CAMA routing listed below.
+**What this integration is and is not.** This is a read-only call against CAMA's dashboard HTTP endpoint (`/api/data`), which serves the same SQLite memory corpus that the MCP tool `cama_query_memories` reads from. It is **not** yet a real MCP-over-HTTP client. The JSON-RPC wire protocol for streamable_http MCP from a browser is still roadmap. Both the dashboard read path and the future MCP read path return the same underlying data; the dashboard endpoint is just the one CAMA already ships and documents publicly. The write path (storing new memories from student sessions back into CAMA) is also roadmap, gated on the backend proxy and per-tenant CAMA routing listed below.
 
 The hook signature `useCamaMemory(studentId, { fallbackTopics })` accepts a `studentId` so the component contract is stable when multi-student routing lands in CAMA; today the argument is used only as a cache key. The single-participant demo corpus serves the same data regardless of `studentId`.
 
@@ -154,14 +154,14 @@ The hook signature `useCamaMemory(studentId, { fallbackTopics })` accepts a `stu
 - [x] Parent dashboard surfaces (sample data)
 - [x] Teacher question-injection design pattern (UI level)
 - [x] AI-drafted family communication surface (UI level)
-- [x] **CAMA read integration (MVP)** — Student Hub's Recent Activity tile reads from a live CAMA backend via `useCamaMemory`; falls back to sample data when CAMA isn't running
+- [x] **CAMA read integration (MVP)**: Student Hub's Recent Activity tile reads from a live CAMA backend via `useCamaMemory`; falls back to sample data when CAMA isn't running
 
 ### Not yet built (required for any deployment)
-- [ ] Backend API proxy — remove client-side Anthropic calls
+- [ ] Backend API proxy: remove client-side Anthropic calls
 - [ ] User accounts and session persistence
 - [ ] Data pipeline connecting student sessions → teacher dashboard → parent view
-- [ ] **CAMA write integration** — store new student-session memories back into CAMA with provenance (gated on backend proxy + per-tenant CAMA routing)
-- [ ] **CAMA-over-MCP transport** — migrate the read path from CAMA's dashboard HTTP endpoint to the streamable_http MCP wire protocol
+- [ ] **CAMA write integration**: store new student-session memories back into CAMA with provenance (gated on backend proxy + per-tenant CAMA routing)
+- [ ] **CAMA-over-MCP transport**: migrate the read path from CAMA's dashboard HTTP endpoint to the streamable_http MCP wire protocol
 - [ ] COPPA-compliant parental consent flow
 - [ ] Content moderation and PII scrub on student input
 - [ ] Age verification
@@ -175,7 +175,7 @@ The hook signature `useCamaMemory(studentId, { fallbackTopics })` accepts a `stu
 
 ---
 
-## Safety & Privacy — Design Target vs. Current State
+## Safety & Privacy: Design Target vs. Current State
 
 Project Companion is designed for children. **Safety claims below describe the design target, not the current repository.** A deployed system must implement each item below before being used with any minor.
 
@@ -196,15 +196,15 @@ Project Companion is designed for children. **Safety claims below describe the d
 ## Related Work
 
 - **CAMA Repository**: [github.com/LoriensLibrary/cama](https://github.com/LoriensLibrary/cama)
-- **Published Papers**: [Zenodo — ORCID 0009-0005-5803-8401](https://orcid.org/0009-0005-5803-8401)
-- **Dataset**: [HuggingFace — Continuity Burden Dataset](https://huggingface.co/datasets/LoriensLibrary/cama-continuity-burden) (aggregate statistics; raw data not released)
+- **Published Papers**: [Zenodo, ORCID 0009-0005-5803-8401](https://orcid.org/0009-0005-5803-8401)
+- **Dataset**: [HuggingFace, Continuity Burden Dataset](https://huggingface.co/datasets/LoriensLibrary/cama-continuity-burden) (aggregate statistics; raw data not released)
 - **Website**: [lorienslibrary.netlify.app](https://lorienslibrary.netlify.app)
 
 ---
 
 ## Author
 
-**Angela Reinhold** — Independent AI safety researcher, founder of Lorien's Library LLC, computer science student (AI concentration) at Full Sail University.
+**Angela Reinhold** is an independent AI safety researcher and founder of Lorien's Library LLC. Computer science student (AI concentration) at Full Sail University.
 
 ORCID: [0009-0005-5803-8401](https://orcid.org/0009-0005-5803-8401)
 
