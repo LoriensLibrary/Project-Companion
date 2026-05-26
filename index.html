@@ -4,6 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Project Companion — Prototype</title>
+    <style>
+      /* Accessibility: respect prefers-reduced-motion across all inline
+         animations and transitions in the dashboard components. */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
   </head>
   <body style="margin:0;background:#0b0a14;color:#e8e6e1;font-family:'Source Sans 3',system-ui,sans-serif;">
     <div id="root"></div>

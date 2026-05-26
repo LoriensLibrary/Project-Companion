@@ -1,9 +1,22 @@
 {
   "name": "project-companion",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.2.0-prototype",
   "type": "module",
   "description": "Design prototype (UI only) for a CAMA-informed K-12 learning companion. Not a deployable platform — see README.",
+  "author": "Angela Reinhold (Lorien's Library LLC)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LoriensLibrary/Project-Companion"
+  },
+  "homepage": "https://github.com/LoriensLibrary/Project-Companion#readme",
+  "bugs": {
+    "url": "https://github.com/LoriensLibrary/Project-Companion/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -15,7 +28,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
-    "vite": "^5.4.20"
+    "vite": "^6.4.2"
   },
   "overrides": {
     "esbuild": "^0.25.0"
