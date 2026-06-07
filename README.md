@@ -1,5 +1,10 @@
 # Project Companion
 
+![status: design prototype](https://img.shields.io/badge/status-design%20prototype-orange)
+![not for production](https://img.shields.io/badge/not%20for-production-lightgrey)
+![data: synthetic only](https://img.shields.io/badge/data-synthetic%20only-blue)
+[![production pattern: Telos_kalos](https://img.shields.io/badge/production%20pattern-Telos__kalos-success)](https://github.com/LoriensLibrary/Telos_kalos)
+
 **A design prototype for a persistent-memory AI learning companion in K–12 education.**
 
 > **Status: design prototype.** This repository contains four React/JSX UI files demonstrating the *design pattern* for a three-sided learning companion (student, teacher, parent) informed by a shared persistent memory. It is **not** a deployed platform. CAMA *read* integration is MVP (Recent Activity tile reads from a local CAMA dashboard endpoint with sample-data fallback); CAMA *write* integration, backend proxy, accounts, COPPA consent flow, content moderation, and persistence are roadmap items. See the [Roadmap](#roadmap) for what is and isn't built.
