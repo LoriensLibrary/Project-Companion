@@ -40,6 +40,12 @@ Four React/JSX files demonstrating the three sides of the design. State is in-me
 - XP, streaks, badges, and progress UI (session-local)
 - **First live CAMA integration:** the Recent Activity panel on the Progress view reads from a local CAMA backend via the `useCamaMemory` hook (`lib/useCamaMemory.js`). Falls back to fictional sample data when CAMA isn't reachable. See [Running with a live CAMA backend](#running-with-a-live-cama-backend) below.
 
+#### Learnmon: North America
+
+| Adventure home | Catch a state | Statedex |
+|---|---|---|
+| ![Learnmon home: progress bar and the five U.S. regions to explore](docs/screenshots/learnmon-2-home.png) | ![A caught state card showing Massachusetts — capital Boston, region Northeast, and a fun fact](docs/screenshots/learnmon-5-caught.png) | ![Statedex grid with caught states revealed and the rest shown as silhouettes](docs/screenshots/learnmon-6-statedex.png) |
+
 ### 👩‍🏫 Teacher Dashboard (`TeacherDashboard.jsx`)
 
 ![Teacher Dashboard: daily brief showing pending tasks and student intervention notes](docs/screenshots/teacher-dashboard.png)

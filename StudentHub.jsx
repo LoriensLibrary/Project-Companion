@@ -793,6 +793,48 @@ function Materials({avatar,name,t,themeKey,onBack}) {
   );
 }
 
+// A single catch encounter. Kept at module top level (not nested inside
+// Learnmon) so that catching a state — which updates Learnmon's `caught`
+// state — re-renders rather than REMOUNTS this component; a nested definition
+// would get a new function identity each parent render and lose `won`/`wrong`.
+function LearnmonEncounter({state,t,alreadyCaught,caughtCount,onCaught,onLeave}) {
+  const [q]=useState(()=>buildQuestion(state,STATES));
+  const [wrong,setWrong]=useState([]);          // options already guessed wrong (disabled)
+  const [won,setWon]=useState(false);
+  const [wasAlready]=useState(alreadyCaught);   // frozen arrival value (before this catch)
+  const pick=(opt)=>{
+    if(won||wrong.includes(opt))return;
+    if(opt===q.answer){setWon(true);onCaught(state.abbr);}
+    else setWrong(w=>[...w,opt]);
+  };
+  if(won||wasAlready) {
+    return <div style={{maxWidth:460,margin:"0 auto",padding:24,textAlign:"center"}}>
+      <div style={{fontSize:12,color:"#6ee7a0",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>{wasAlready&&!won?"Already in your Statedex":"Caught!"} 🎉</div>
+      <div style={{fontSize:72,margin:"6px 0",filter:`drop-shadow(0 0 18px ${t.accent}55)`,animation:"lmpop 0.5s ease"}}>{state.emoji}</div>
+      <h2 style={{fontFamily:"Georgia,serif",color:t.accent,fontSize:26,margin:"4px 0"}}>{state.name}</h2>
+      <div style={{fontSize:13,color:t.dim,marginBottom:16}}>{state.nickname}</div>
+      <div style={{background:t.bubble,border:`1px solid ${t.border}`,borderRadius:16,padding:"16px 18px",textAlign:"left",marginBottom:18}}>
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:8,fontSize:14}}><span style={{color:t.dim}}>🏛️ Capital</span><span style={{fontWeight:600}}>{state.capital}</span></div>
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:8,fontSize:14}}><span style={{color:t.dim}}>🔤 Abbreviation</span><span style={{fontWeight:600}}>{state.abbr}</span></div>
+        <div style={{display:"flex",justifyContent:"space-between",fontSize:14}}><span style={{color:t.dim}}>🗺️ Region</span><span style={{fontWeight:600,textTransform:"capitalize"}}>{state.region}</span></div>
+        <div style={{marginTop:12,paddingTop:12,borderTop:`1px solid ${t.border}`,fontSize:13,lineHeight:1.6,color:"#d8d6d0"}}>💡 {state.fact}</div>
+      </div>
+      {won&&<div style={{fontSize:13,color:"#6ee7a0",marginBottom:14}}>+15 XP • {caughtCount}/50 collected</div>}
+      <button onClick={onLeave} style={{padding:"12px 28px",borderRadius:12,border:"none",background:t.accent,color:"#fff",fontSize:15,fontWeight:600,cursor:"pointer"}}>Continue</button>
+    </div>;
+  }
+  return <div style={{maxWidth:460,margin:"0 auto",padding:24,textAlign:"center"}}>
+    <div style={{fontSize:12,color:t.accent,fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:10}}>A wild Learnmon appeared!</div>
+    <div style={{fontSize:72,margin:"6px 0",animation:"lmfloat 3s ease-in-out infinite"}}>{state.emoji}</div>
+    <div style={{fontSize:15,color:t.dim,marginBottom:20}}>Answer to catch it and add it to your Statedex.</div>
+    <div style={{background:t.bubble,border:`1px solid ${t.border}`,borderRadius:16,padding:"18px 16px",marginBottom:16}}><div style={{fontSize:17,fontWeight:600,lineHeight:1.5}}>{q.prompt}</div></div>
+    <div style={{display:"flex",flexDirection:"column",gap:9}}>
+      {q.options.map((o,i)=>{const isWrong=wrong.includes(o);return <button key={i} onClick={()=>pick(o)} disabled={isWrong} style={{padding:"13px 16px",borderRadius:12,border:isWrong?"2px solid #f87171":`2px solid ${t.border}`,background:isWrong?"rgba(248,113,113,0.12)":t.card,color:isWrong?"#ffb4b4":"#e8e6e1",fontSize:15,cursor:isWrong?"default":"pointer",fontWeight:isWrong?700:400,textAlign:"left",transition:"all 0.2s",opacity:isWrong?0.6:1}}>{o}{isWrong?"  ✕":""}</button>;})}
+    </div>
+    {wrong.length>0&&<div style={{marginTop:14,fontSize:14,color:"#ffb4b4"}}>Oops, it wriggled free! Try one of the others. 🌀</div>}
+  </div>;
+}
+
 // ===== LEARNMON: NORTH AMERICA =====
 // A creature-collecting geography game. Every U.S. state is a "Learnmon" you
 // catch by answering a question about it (capital / nickname / abbreviation).
@@ -813,47 +855,8 @@ function Learnmon({avatar,name,t,themeKey,onBack}) {
   const shell=(inner)=><div style={{height:"100vh",background:BG(t),fontFamily:"'Source Sans 3',sans-serif",color:"#e8e6e1",position:"relative",overflowY:"auto"}}><WorldBg theme={themeKey}/><div style={{zIndex:1,position:"relative"}}>{inner}</div></div>;
   const bar=(icon,title,back)=><div style={{padding:"12px 16px",borderBottom:`1px solid ${t.border}`,display:"flex",alignItems:"center",gap:10,background:`${t.bg}cc`,backdropFilter:"blur(8px)",position:"sticky",top:0,zIndex:2}}><button onClick={back} style={{background:"none",border:`1px solid ${t.border}`,color:t.dim,padding:"5px 12px",borderRadius:6,cursor:"pointer",fontSize:12}}>← Back</button><span style={{fontSize:18}}>{icon}</span><span style={{fontFamily:"Georgia,serif",fontWeight:600,color:t.accent}}>{title}</span><span style={{marginLeft:"auto",fontSize:12,color:t.dim,fontWeight:600}}>🎒 {caughtCount}/50</span></div>;
 
-  // --- ENCOUNTER: catch a single state ---
-  function Encounter({state,onCaught,onLeave}) {
-    const [q]=useState(()=>buildQuestion(state,STATES));
-    const [picked,setPicked]=useState(null);
-    const [won,setWon]=useState(false);
-    const already=caught[state.abbr];
-    const pick=(opt)=>{
-      if(won)return;
-      setPicked(opt);
-      if(opt===q.answer){setWon(true);onCaught(state.abbr);}
-    };
-    if(won||already) {
-      return <div style={{maxWidth:460,margin:"0 auto",padding:24,textAlign:"center"}}>
-        <div style={{fontSize:12,color:"#6ee7a0",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>{already&&!won?"Already in your Statedex":"Caught!"} 🎉</div>
-        <div style={{fontSize:72,margin:"6px 0",filter:`drop-shadow(0 0 18px ${t.accent}55)`,animation:"lmpop 0.5s ease"}}>{state.emoji}</div>
-        <h2 style={{fontFamily:"Georgia,serif",color:t.accent,fontSize:26,margin:"4px 0"}}>{state.name}</h2>
-        <div style={{fontSize:13,color:t.dim,marginBottom:16}}>{state.nickname}</div>
-        <div style={{background:t.bubble,border:`1px solid ${t.border}`,borderRadius:16,padding:"16px 18px",textAlign:"left",marginBottom:18}}>
-          <div style={{display:"flex",justifyContent:"space-between",marginBottom:8,fontSize:14}}><span style={{color:t.dim}}>🏛️ Capital</span><span style={{fontWeight:600}}>{state.capital}</span></div>
-          <div style={{display:"flex",justifyContent:"space-between",marginBottom:8,fontSize:14}}><span style={{color:t.dim}}>🔤 Abbreviation</span><span style={{fontWeight:600}}>{state.abbr}</span></div>
-          <div style={{display:"flex",justifyContent:"space-between",fontSize:14}}><span style={{color:t.dim}}>🗺️ Region</span><span style={{fontWeight:600,textTransform:"capitalize"}}>{state.region}</span></div>
-          <div style={{marginTop:12,paddingTop:12,borderTop:`1px solid ${t.border}`,fontSize:13,lineHeight:1.6,color:"#d8d6d0"}}>💡 {state.fact}</div>
-        </div>
-        {won&&<div style={{fontSize:13,color:"#6ee7a0",marginBottom:14}}>+15 XP • {caughtCount+ (already?0:1)}/50 collected</div>}
-        <button onClick={onLeave} style={{padding:"12px 28px",borderRadius:12,border:"none",background:t.accent,color:"#fff",fontSize:15,fontWeight:600,cursor:"pointer"}}>Continue</button>
-      </div>;
-    }
-    return <div style={{maxWidth:460,margin:"0 auto",padding:24,textAlign:"center"}}>
-      <div style={{fontSize:12,color:t.accent,fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:10}}>A wild Learnmon appeared!</div>
-      <div style={{fontSize:72,margin:"6px 0",animation:"lmfloat 3s ease-in-out infinite"}}>{state.emoji}</div>
-      <div style={{fontSize:15,color:t.dim,marginBottom:20}}>Answer to catch it and add it to your Statedex.</div>
-      <div style={{background:t.bubble,border:`1px solid ${t.border}`,borderRadius:16,padding:"18px 16px",marginBottom:16}}><div style={{fontSize:17,fontWeight:600,lineHeight:1.5}}>{q.prompt}</div></div>
-      <div style={{display:"flex",flexDirection:"column",gap:9}}>
-        {q.options.map((o,i)=>{const isWrong=picked===o&&o!==q.answer;const revealCorrect=picked!==null&&o===q.answer;return <button key={i} onClick={()=>pick(o)} disabled={picked!==null&&!isWrong} style={{padding:"13px 16px",borderRadius:12,border:revealCorrect?"2px solid #6ee7a0":isWrong?"2px solid #f87171":`2px solid ${t.border}`,background:revealCorrect?"rgba(110,231,160,0.12)":isWrong?"rgba(248,113,113,0.12)":t.card,color:"#e8e6e1",fontSize:15,cursor:picked!==null?"default":"pointer",fontWeight:revealCorrect||isWrong?700:400,textAlign:"left",transition:"all 0.2s"}}>{o}</button>;})}
-      </div>
-      {picked!==null&&picked!==q.answer&&<div style={{marginTop:14,fontSize:14,color:"#ffb4b4"}}>Oops, it wriggled free! Tap the glowing answer to catch it.</div>}
-    </div>;
-  }
-
   if(view==="encounter"&&target) {
-    return shell(<>{bar(target.emoji,target.name,()=>setView("region"))}<Encounter state={target} onCaught={doCatch} onLeave={()=>setView("region")}/><style>{`@keyframes lmfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}@keyframes lmpop{0%{transform:scale(0.4);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}`}</style></>);
+    return shell(<>{bar(target.emoji,target.name,()=>setView("region"))}<LearnmonEncounter state={target} t={t} alreadyCaught={!!caught[target.abbr]} caughtCount={caughtCount} onCaught={doCatch} onLeave={()=>setView("region")}/><style>{`@keyframes lmfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}@keyframes lmpop{0%{transform:scale(0.4);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}`}</style></>);
   }
 
   // --- REGION: pick a state to encounter ---
