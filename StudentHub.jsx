@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { callClaude } from "./lib/callClaude.js";
 import { useCamaMemory } from "./lib/useCamaMemory.js";
+import { STATES, REGIONS, NORTH_AMERICA, buildQuestion } from "./data/statedex.js";
 
 const AVATARS = {
   luna: { name: "Luna", emoji: "🐱", color: "#9b7fd4", desc: "A curious kitten who loves to learn" },
@@ -310,6 +311,19 @@ function Hub({avatar,name,t,themeKey,onNavigate}) {
               <div><div style={{fontSize:14,lineHeight:1.5}}>{n.message}</div><div style={{fontSize:11,color:t.dim,marginTop:2}}>{n.date}</div></div>
             </div>)}
           </div>
+          {/* Featured: Learnmon */}
+          <button onClick={()=>onNavigate("learnmon")} style={{width:"100%",display:"flex",alignItems:"center",gap:14,background:`linear-gradient(135deg,${t.accent}33,${avatar.color}22)`,border:`2px solid ${t.accent}66`,borderRadius:16,padding:"16px 18px",marginBottom:16,cursor:"pointer",textAlign:"left",color:"#e8e6e1",transition:"all 0.2s",backdropFilter:"blur(8px)"}}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor=t.accent;e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 0 22px ${t.accent}33`;}}
+            onMouseLeave={e=>{e.currentTarget.style.borderColor=t.accent+"66";e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="none";}}>
+            <span style={{fontSize:40,flexShrink:0,animation:"hubfloat 3s ease-in-out infinite"}}>🗺️</span>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:10,color:t.accent,fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:3}}>New Adventure</div>
+              <div style={{fontFamily:"Georgia,serif",fontSize:18,fontWeight:700,color:t.accent}}>Learnmon: North America</div>
+              <div style={{fontSize:12,color:t.dim,lineHeight:1.4}}>Explore the continent and catch all 50 states!</div>
+            </div>
+            <span style={{fontSize:22,color:t.accent,flexShrink:0}}>→</span>
+          </button>
+          <style>{`@keyframes hubfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}`}</style>
           {/* Nav Grid */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
             {items.map(item=><button key={item.id} onClick={()=>onNavigate(item.id)} style={{background:`${t.card}dd`,border:`2px solid ${t.border}`,borderRadius:16,padding:"24px 16px",cursor:"pointer",transition:"all 0.2s",textAlign:"center",backdropFilter:"blur(8px)"}}
@@ -779,6 +793,195 @@ function Materials({avatar,name,t,themeKey,onBack}) {
   );
 }
 
+// A single catch encounter. Kept at module top level (not nested inside
+// Learnmon) so that catching a state — which updates Learnmon's `caught`
+// state — re-renders rather than REMOUNTS this component; a nested definition
+// would get a new function identity each parent render and lose `won`/`wrong`.
+function LearnmonEncounter({state,t,alreadyCaught,caughtCount,onCaught,onLeave}) {
+  const [q]=useState(()=>buildQuestion(state,STATES));
+  const [wrong,setWrong]=useState([]);          // options already guessed wrong (disabled)
+  const [won,setWon]=useState(false);
+  const [wasAlready]=useState(alreadyCaught);   // frozen arrival value (before this catch)
+  const pick=(opt)=>{
+    if(won||wrong.includes(opt))return;
+    if(opt===q.answer){setWon(true);onCaught(state.abbr);}
+    else setWrong(w=>[...w,opt]);
+  };
+  if(won||wasAlready) {
+    return <div style={{maxWidth:460,margin:"0 auto",padding:24,textAlign:"center"}}>
+      <div style={{fontSize:12,color:"#6ee7a0",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>{wasAlready&&!won?"Already in your Statedex":"Caught!"} 🎉</div>
+      <div style={{fontSize:72,margin:"6px 0",filter:`drop-shadow(0 0 18px ${t.accent}55)`,animation:"lmpop 0.5s ease"}}>{state.emoji}</div>
+      <h2 style={{fontFamily:"Georgia,serif",color:t.accent,fontSize:26,margin:"4px 0"}}>{state.name}</h2>
+      <div style={{fontSize:13,color:t.dim,marginBottom:16}}>{state.nickname}</div>
+      <div style={{background:t.bubble,border:`1px solid ${t.border}`,borderRadius:16,padding:"16px 18px",textAlign:"left",marginBottom:18}}>
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:8,fontSize:14}}><span style={{color:t.dim}}>🏛️ Capital</span><span style={{fontWeight:600}}>{state.capital}</span></div>
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:8,fontSize:14}}><span style={{color:t.dim}}>🔤 Abbreviation</span><span style={{fontWeight:600}}>{state.abbr}</span></div>
+        <div style={{display:"flex",justifyContent:"space-between",fontSize:14}}><span style={{color:t.dim}}>🗺️ Region</span><span style={{fontWeight:600,textTransform:"capitalize"}}>{state.region}</span></div>
+        <div style={{marginTop:12,paddingTop:12,borderTop:`1px solid ${t.border}`,fontSize:13,lineHeight:1.6,color:"#d8d6d0"}}>💡 {state.fact}</div>
+      </div>
+      {won&&<div style={{fontSize:13,color:"#6ee7a0",marginBottom:14}}>+15 XP • {caughtCount}/50 collected</div>}
+      <button onClick={onLeave} style={{padding:"12px 28px",borderRadius:12,border:"none",background:t.accent,color:"#fff",fontSize:15,fontWeight:600,cursor:"pointer"}}>Continue</button>
+    </div>;
+  }
+  return <div style={{maxWidth:460,margin:"0 auto",padding:24,textAlign:"center"}}>
+    <div style={{fontSize:12,color:t.accent,fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:10}}>A wild Learnmon appeared!</div>
+    <div style={{fontSize:72,margin:"6px 0",animation:"lmfloat 3s ease-in-out infinite"}}>{state.emoji}</div>
+    <div style={{fontSize:15,color:t.dim,marginBottom:20}}>Answer to catch it and add it to your Statedex.</div>
+    <div style={{background:t.bubble,border:`1px solid ${t.border}`,borderRadius:16,padding:"18px 16px",marginBottom:16}}><div style={{fontSize:17,fontWeight:600,lineHeight:1.5}}>{q.prompt}</div></div>
+    <div style={{display:"flex",flexDirection:"column",gap:9}}>
+      {q.options.map((o,i)=>{const isWrong=wrong.includes(o);return <button key={i} onClick={()=>pick(o)} disabled={isWrong} style={{padding:"13px 16px",borderRadius:12,border:isWrong?"2px solid #f87171":`2px solid ${t.border}`,background:isWrong?"rgba(248,113,113,0.12)":t.card,color:isWrong?"#ffb4b4":"#e8e6e1",fontSize:15,cursor:isWrong?"default":"pointer",fontWeight:isWrong?700:400,textAlign:"left",transition:"all 0.2s",opacity:isWrong?0.6:1}}>{o}{isWrong?"  ✕":""}</button>;})}
+    </div>
+    {wrong.length>0&&<div style={{marginTop:14,fontSize:14,color:"#ffb4b4"}}>Oops, it wriggled free! Try one of the others. 🌀</div>}
+  </div>;
+}
+
+// ===== LEARNMON: NORTH AMERICA =====
+// A creature-collecting geography game. Every U.S. state is a "Learnmon" you
+// catch by answering a question about it (capital / nickname / abbreviation).
+// Caught states unlock their card in the Statedex. Progress is session-local,
+// matching the rest of this prototype (resets on refresh).
+function Learnmon({avatar,name,t,themeKey,onBack}) {
+  const [caught,setCaught]=useState(()=>({}));           // { AB: true }
+  const [view,setView]=useState("home");                  // home | region | encounter | dex | continent
+  const [regionKey,setRegionKey]=useState(null);
+  const [target,setTarget]=useState(null);                // state currently being encountered
+  const [selected,setSelected]=useState(null);            // Statedex card being viewed
+
+  const caughtCount=Object.keys(caught).length;
+  const statesIn=(rk)=>STATES.filter(s=>s.region===rk);
+  const caughtIn=(rk)=>statesIn(rk).filter(s=>caught[s.abbr]).length;
+  const doCatch=(abbr)=>setCaught(c=>({...c,[abbr]:true}));
+
+  const shell=(inner)=><div style={{height:"100vh",background:BG(t),fontFamily:"'Source Sans 3',sans-serif",color:"#e8e6e1",position:"relative",overflowY:"auto"}}><WorldBg theme={themeKey}/><div style={{zIndex:1,position:"relative"}}>{inner}</div></div>;
+  const bar=(icon,title,back)=><div style={{padding:"12px 16px",borderBottom:`1px solid ${t.border}`,display:"flex",alignItems:"center",gap:10,background:`${t.bg}cc`,backdropFilter:"blur(8px)",position:"sticky",top:0,zIndex:2}}><button onClick={back} style={{background:"none",border:`1px solid ${t.border}`,color:t.dim,padding:"5px 12px",borderRadius:6,cursor:"pointer",fontSize:12}}>← Back</button><span style={{fontSize:18}}>{icon}</span><span style={{fontFamily:"Georgia,serif",fontWeight:600,color:t.accent}}>{title}</span><span style={{marginLeft:"auto",fontSize:12,color:t.dim,fontWeight:600}}>🎒 {caughtCount}/50</span></div>;
+
+  if(view==="encounter"&&target) {
+    return shell(<>{bar(target.emoji,target.name,()=>setView("region"))}<LearnmonEncounter state={target} t={t} alreadyCaught={!!caught[target.abbr]} caughtCount={caughtCount} onCaught={doCatch} onLeave={()=>setView("region")}/><style>{`@keyframes lmfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}@keyframes lmpop{0%{transform:scale(0.4);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}`}</style></>);
+  }
+
+  // --- REGION: pick a state to encounter ---
+  if(view==="region"&&regionKey) {
+    const rg=REGIONS.find(r=>r.key===regionKey);const list=statesIn(regionKey);
+    return shell(<>{bar(rg.emoji,rg.name,()=>setView("home"))}
+      <div style={{maxWidth:560,margin:"0 auto",padding:20}}>
+        <p style={{color:t.dim,fontSize:14,textAlign:"center",marginBottom:6}}>{rg.desc}</p>
+        <p style={{color:rg.color,fontSize:13,textAlign:"center",fontWeight:600,marginBottom:18}}>{caughtIn(regionKey)}/{list.length} Learnmon caught here</p>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          {list.map(s=>{const got=caught[s.abbr];return <button key={s.abbr} onClick={()=>{setTarget(s);setView("encounter");}} style={{display:"flex",alignItems:"center",gap:12,background:got?t.bubble:t.card,border:`2px solid ${got?rg.color+"66":t.border}`,borderRadius:14,padding:"12px 14px",cursor:"pointer",textAlign:"left",color:"#e8e6e1",transition:"all 0.2s"}}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor=rg.color;e.currentTarget.style.transform="translateY(-2px)";}}
+            onMouseLeave={e=>{e.currentTarget.style.borderColor=got?rg.color+"66":t.border;e.currentTarget.style.transform="none";}}>
+            <span style={{fontSize:30,filter:got?"none":"grayscale(100%) opacity(0.5)"}}>{got?s.emoji:"❔"}</span>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:14,fontWeight:600}}>{got?s.name:"Wild Learnmon"}</div>
+              <div style={{fontSize:11,color:got?"#6ee7a0":t.dim}}>{got?`✓ ${s.capital}`:"Tap to catch"}</div>
+            </div>
+          </button>;})}
+        </div>
+      </div>
+    </>);
+  }
+
+  // --- STATEDEX ---
+  if(view==="dex") {
+    const complete=caughtCount===50;
+    return shell(<>{bar("📖","Statedex",()=>setView("home"))}
+      <div style={{maxWidth:600,margin:"0 auto",padding:20}}>
+        {complete&&<div style={{background:`linear-gradient(135deg,${t.accent}33,${avatar.color}22)`,border:`2px solid ${t.accent}`,borderRadius:16,padding:"16px 18px",marginBottom:16,textAlign:"center"}}>
+          <div style={{fontSize:34}}>🏆</div><div style={{fontFamily:"Georgia,serif",fontSize:18,color:t.accent,fontWeight:700}}>Geography Champion!</div>
+          <div style={{fontSize:13,color:t.dim}}>You caught all 50 states, {name}!</div>
+        </div>}
+        <p style={{color:t.dim,fontSize:13,textAlign:"center",marginBottom:16}}>{caughtCount} of 50 states collected. Tap a caught state to review it.</p>
+        {REGIONS.map(rg=>{const list=statesIn(rg.key);return <div key={rg.key} style={{marginBottom:18}}>
+          <div style={{fontSize:12,fontWeight:700,color:rg.color,marginBottom:10,display:"flex",alignItems:"center",gap:6}}><span>{rg.emoji}</span>{rg.name}<span style={{color:t.dim,fontWeight:400,marginLeft:"auto"}}>{caughtIn(rg.key)}/{list.length}</span></div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(78px,1fr))",gap:8}}>
+            {list.map(s=>{const got=caught[s.abbr];return <button key={s.abbr} onClick={()=>{if(got)setSelected(s);}} style={{aspectRatio:"1",borderRadius:12,border:`1px solid ${got?rg.color+"55":t.border}`,background:got?t.bubble:t.card,cursor:got?"pointer":"default",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:4,opacity:got?1:0.5}}>
+              <span style={{fontSize:24,filter:got?"none":"grayscale(100%)"}}>{got?s.emoji:"❔"}</span>
+              <span style={{fontSize:10,fontWeight:700,color:got?"#e8e6e1":t.dim}}>{s.abbr}</span>
+            </button>;})}
+          </div>
+        </div>;})}
+      </div>
+      {selected&&<div onClick={()=>setSelected(null)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:10,padding:20}}>
+        <div onClick={e=>e.stopPropagation()} style={{background:t.card,border:`2px solid ${t.accent}55`,borderRadius:18,padding:"22px 20px",maxWidth:360,width:"100%",textAlign:"center"}}>
+          <div style={{fontSize:64,marginBottom:4}}>{selected.emoji}</div>
+          <h2 style={{fontFamily:"Georgia,serif",color:t.accent,fontSize:24,margin:"2px 0"}}>{selected.name}</h2>
+          <div style={{fontSize:13,color:t.dim,marginBottom:14}}>{selected.nickname}</div>
+          <div style={{background:t.bubble,border:`1px solid ${t.border}`,borderRadius:14,padding:"14px 16px",textAlign:"left"}}>
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:8,fontSize:14}}><span style={{color:t.dim}}>🏛️ Capital</span><span style={{fontWeight:600}}>{selected.capital}</span></div>
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:8,fontSize:14}}><span style={{color:t.dim}}>🔤 Abbreviation</span><span style={{fontWeight:600}}>{selected.abbr}</span></div>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:14}}><span style={{color:t.dim}}>🗺️ Region</span><span style={{fontWeight:600,textTransform:"capitalize"}}>{selected.region}</span></div>
+            <div style={{marginTop:12,paddingTop:12,borderTop:`1px solid ${t.border}`,fontSize:13,lineHeight:1.6,color:"#d8d6d0"}}>💡 {selected.fact}</div>
+          </div>
+          <button onClick={()=>setSelected(null)} style={{marginTop:16,padding:"10px 24px",borderRadius:10,border:"none",background:t.accent,color:"#fff",fontSize:14,fontWeight:600,cursor:"pointer"}}>Close</button>
+        </div>
+      </div>}
+    </>);
+  }
+
+  // --- CONTINENT: North America overview ---
+  if(view==="continent") {
+    return shell(<>{bar("🌎","North America",()=>setView("home"))}
+      <div style={{maxWidth:560,margin:"0 auto",padding:20}}>
+        <div style={{textAlign:"center",marginBottom:18}}><div style={{fontSize:56}}>🌎</div><p style={{color:t.dim,fontSize:14,lineHeight:1.6,maxWidth:440,margin:"6px auto 0"}}>The 50 states you collect all belong to one country on one big continent. Here's the bigger picture!</p></div>
+        <div style={{background:`${t.card}dd`,border:`1px solid ${t.border}`,borderRadius:16,padding:"16px 18px",marginBottom:16,backdropFilter:"blur(8px)"}}>
+          <div style={{fontSize:11,color:t.accent,fontWeight:700,marginBottom:12,textTransform:"uppercase",letterSpacing:1}}>🌎 About the Continent</div>
+          {NORTH_AMERICA.facts.map((f,i)=><div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"7px 0",borderTop:i>0?`1px solid ${t.border}`:"none"}}><span style={{color:t.accent,fontWeight:700}}>›</span><span style={{fontSize:14,lineHeight:1.5}}>{f}</span></div>)}
+        </div>
+        <div style={{fontSize:11,color:t.accent,fontWeight:700,marginBottom:10,textTransform:"uppercase",letterSpacing:1,paddingLeft:2}}>🗺️ Three Biggest Countries</div>
+        {NORTH_AMERICA.countries.map((c,i)=><div key={i} style={{display:"flex",gap:12,alignItems:"center",background:t.bubble,border:`1px solid ${t.border}`,borderRadius:14,padding:"12px 14px",marginBottom:10}}>
+          <span style={{fontSize:30}}>{c.emoji}</span>
+          <div style={{flex:1}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:8}}><span style={{fontSize:15,fontWeight:700}}>{c.name}</span><span style={{fontSize:11,color:t.dim}}>Capital: {c.capital}</span></div>
+            <div style={{fontSize:12,color:t.dim,lineHeight:1.5,marginTop:3}}>{c.note}</div>
+          </div>
+        </div>)}
+      </div>
+    </>);
+  }
+
+  // --- HOME ---
+  const pct=Math.round((caughtCount/50)*100);
+  return shell(<>{bar("🗺️","Learnmon",onBack)}
+    <div style={{maxWidth:600,margin:"0 auto",padding:20}}>
+      <div style={{textAlign:"center",marginBottom:16}}>
+        <div style={{fontSize:46,marginBottom:4}}>🗺️</div>
+        <h1 style={{fontFamily:"Georgia,serif",color:t.accent,fontSize:24,margin:"0 0 4px"}}>Learnmon: North America</h1>
+        <p style={{color:t.dim,fontSize:14,lineHeight:1.5,maxWidth:420,margin:"0 auto"}}>Travel the regions of the United States and catch all 50 states, {name}! Each one is a Learnmon waiting to join your Statedex. {avatar.emoji}</p>
+      </div>
+      {/* progress */}
+      <div style={{background:`${t.card}dd`,border:`1px solid ${t.border}`,borderRadius:14,padding:"14px 18px",marginBottom:16,backdropFilter:"blur(8px)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}><span style={{fontSize:13,fontWeight:600}}>🎒 Your Collection</span><span style={{fontSize:13,color:t.accent,fontWeight:700}}>{caughtCount}/50</span></div>
+        <div style={{height:10,borderRadius:5,background:t.border,overflow:"hidden"}}><div style={{height:"100%",width:`${pct}%`,borderRadius:5,background:`linear-gradient(90deg,${t.accent},${avatar.color})`,transition:"width 0.6s ease"}}/></div>
+      </div>
+      {/* quick links */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
+        <button onClick={()=>setView("continent")} style={{background:t.bubble,border:`2px solid ${t.border}`,borderRadius:14,padding:"16px 12px",cursor:"pointer",textAlign:"center",color:"#e8e6e1",transition:"all 0.2s"}}
+          onMouseEnter={e=>{e.currentTarget.style.borderColor=t.accent;e.currentTarget.style.transform="translateY(-2px)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor=t.border;e.currentTarget.style.transform="none";}}>
+          <div style={{fontSize:30,marginBottom:4}}>🌎</div><div style={{fontSize:14,fontWeight:700,fontFamily:"Georgia,serif"}}>North America</div><div style={{fontSize:11,color:t.dim}}>See the whole continent</div>
+        </button>
+        <button onClick={()=>setView("dex")} style={{background:t.bubble,border:`2px solid ${t.border}`,borderRadius:14,padding:"16px 12px",cursor:"pointer",textAlign:"center",color:"#e8e6e1",transition:"all 0.2s"}}
+          onMouseEnter={e=>{e.currentTarget.style.borderColor=t.accent;e.currentTarget.style.transform="translateY(-2px)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor=t.border;e.currentTarget.style.transform="none";}}>
+          <div style={{fontSize:30,marginBottom:4}}>📖</div><div style={{fontSize:14,fontWeight:700,fontFamily:"Georgia,serif"}}>Statedex</div><div style={{fontSize:11,color:t.dim}}>Review what you caught</div>
+        </button>
+      </div>
+      {/* regions */}
+      <div style={{fontSize:11,color:t.accent,fontWeight:700,marginBottom:10,textTransform:"uppercase",letterSpacing:1,paddingLeft:2}}>🧭 Choose a Region to Explore</div>
+      <div style={{display:"flex",flexDirection:"column",gap:10}}>
+        {REGIONS.map(rg=>{const got=caughtIn(rg.key);const tot=statesIn(rg.key).length;const done=got===tot;return <button key={rg.key} onClick={()=>{setRegionKey(rg.key);setView("region");}} style={{display:"flex",alignItems:"center",gap:14,background:`${t.card}dd`,border:`2px solid ${done?rg.color:t.border}`,borderRadius:14,padding:"14px 16px",cursor:"pointer",textAlign:"left",color:"#e8e6e1",transition:"all 0.2s",backdropFilter:"blur(8px)"}}
+          onMouseEnter={e=>{e.currentTarget.style.borderColor=rg.color;e.currentTarget.style.transform="translateX(3px)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor=done?rg.color:t.border;e.currentTarget.style.transform="none";}}>
+          <span style={{fontSize:32,flexShrink:0}}>{rg.emoji}</span>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:16,fontWeight:700,fontFamily:"Georgia,serif",color:rg.color}}>{rg.name} {done&&"✓"}</div>
+            <div style={{fontSize:12,color:t.dim,lineHeight:1.4}}>{rg.desc}</div>
+          </div>
+          <span style={{fontSize:12,color:t.dim,fontWeight:700,flexShrink:0}}>{got}/{tot}</span>
+        </button>;})}
+      </div>
+      <div style={{textAlign:"center",padding:"18px 0 4px",color:t.dim,fontSize:13}}><span style={{fontSize:22}}>{avatar.emoji}</span><div style={{marginTop:6}}>{avatar.name} says: "Gotta learn 'em all, {name}!"</div></div>
+    </div>
+  </>);
+}
+
 // ===== MAIN =====
 export default function App() {
   const [step,setStep]=useState("name");
@@ -800,6 +1003,7 @@ export default function App() {
 
   if(screen==="progress") return <Progress avatar={avatar} name={studentName} t={t} themeKey={themeKey} onBack={goHub}/>;
   if(screen==="games") return <Games avatar={avatar} name={studentName} t={t} themeKey={themeKey} onBack={goHub}/>;
+  if(screen==="learnmon") return <Learnmon avatar={avatar} name={studentName} t={t} themeKey={themeKey} onBack={goHub}/>;
   if(screen==="materials") return <Materials avatar={avatar} name={studentName} t={t} themeKey={themeKey} onBack={goHub}/>;
 
   return null;

@@ -36,8 +36,15 @@ Four React/JSX files demonstrating the three sides of the design. State is in-me
 - Four companion characters
 - Subject-based tutoring surfaces across Math, Science, Reading, Social Studies
 - Educational mini-games: Quick Quiz, Math Flash, Word Scramble, Memory Match
+- **Learnmon: North America** — a creature-collecting geography game where each of the 50 U.S. states is a "Learnmon" you catch by answering a capital / nickname / abbreviation question, then unlock in a Statedex. States are grouped into the five taught regions (Northeast, Southeast, Midwest, Southwest, West) and framed by a North America continent overview. State data lives in [`data/statedex.js`](./data/statedex.js).
 - XP, streaks, badges, and progress UI (session-local)
 - **First live CAMA integration:** the Recent Activity panel on the Progress view reads from a local CAMA backend via the `useCamaMemory` hook (`lib/useCamaMemory.js`). Falls back to fictional sample data when CAMA isn't reachable. See [Running with a live CAMA backend](#running-with-a-live-cama-backend) below.
+
+#### Learnmon: North America
+
+| Adventure home | Catch a state | Statedex |
+|---|---|---|
+| ![Learnmon home: progress bar and the five U.S. regions to explore](docs/screenshots/learnmon-2-home.png) | ![A caught state card showing Massachusetts — capital Boston, region Northeast, and a fun fact](docs/screenshots/learnmon-5-caught.png) | ![Statedex grid with caught states revealed and the rest shown as silhouettes](docs/screenshots/learnmon-6-statedex.png) |
 
 ### 👩‍🏫 Teacher Dashboard (`TeacherDashboard.jsx`)
 
@@ -150,6 +157,7 @@ The hook signature `useCamaMemory(studentId, { fallbackTopics })` accepts a `stu
 - [x] Student companion UI with Socratic-prompt tutoring surface
 - [x] Four themed animated worlds
 - [x] Educational mini-games (Quiz, Math, Scramble, Memory)
+- [x] Learnmon: North America — collect all 50 states, Statedex, region + continent framing
 - [x] Teacher dashboard with 9 feature tabs (sample data)
 - [x] Parent dashboard surfaces (sample data)
 - [x] Teacher question-injection design pattern (UI level)
